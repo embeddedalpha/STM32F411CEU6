@@ -1,109 +1,37 @@
 #include "I2S.h"
 
 
-
-void I2S_Init(SPI_TypeDef *I2S, uint8_t mode, uint8_t standard, uint8_t data_length, uint8_t channel_length)
+void I2S1_Master__Init(void)
 {
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SMOD |
-									 SPI_I2SCFGR_I2SE; //Enable I2S
+		//CLOCK CONFIGURATION
+		RCC -> CR |= RCC_CR_PLLI2SON;
+		RCC -> PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSE;
+		RCC -> PLLI2SCFGR |= (192 << 6) | (5 << 28) ;
+		RCC -> APB2ENR |= RCC_APB2ENR_SPI1EN ;
+		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 		
-	switch(mode){
-		case 1:
-		{
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SCFG;
-			break;
-		}
+		//PIN CONFIGURATION
+		GPIOA -> MODER &= ~((GPIO_MODER_MODE4_0 | GPIO_MODER_MODE4_1) |
+												(GPIO_MODER_MODE5_0 | GPIO_MODER_MODE5_1) |
+												(GPIO_MODER_MODE7_0 | GPIO_MODER_MODE7_1));
+		GPIOA -> OSPEEDR |= ((GPIO_OSPEEDR_OSPEED4_0 | GPIO_OSPEEDR_OSPEED4_1) |
+												(GPIO_OSPEEDR_OSPEED5_0 | GPIO_OSPEEDR_OSPEED5_1) |
+												(GPIO_OSPEEDR_OSPEED7_0 | GPIO_OSPEEDR_OSPEED7_1));	
+		GPIOA -> PUPDR &= ~((GPIO_PUPDR_PUPDR4_0 | GPIO_PUPDR_PUPDR4_1) |
+												(GPIO_PUPDR_PUPDR5_0 | GPIO_PUPDR_PUPDR5_1) |
+												(GPIO_PUPDR_PUPDR7_0 | GPIO_PUPDR_PUPDR7_1));	
+		GPIOA -> OTYPER |= GPIO_OTYPER_OT4 | GPIO_OTYPER_OT5 | GPIO_OTYPER_OT7;
+		GPIOA->AFR[0] |= (5 << 16) | (5 << 20) | (5 << 28);
 		
-		case 2:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SCFG_0;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SCFG_1 ;
-			break;
-		}	
-
-		case 3:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SCFG_1;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SCFG_0 ;
-			break;
-		}
-
-		case 4:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SCFG_0;
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SCFG_1 ;
-			break;
-		}		
-		
-	}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	switch(standard){
-		case 1:
-		{
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SSTD;
-			break;
-		}
-		
-		case 2:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SSTD_0;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SSTD_1 ;
-			break;
-		}	
-
-		case 3:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SSTD_1;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_I2SSTD_0 ;
-			break;
-		}
-
-		case 4:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SSTD_0;
-		I2S->I2SCFGR |= SPI_I2SCFGR_I2SSTD_1 ;
-			break;
-		}		
-			
-	}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	switch(data_length){
-		case 1:
-		{
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_DATLEN;
-			break;
-		}
-		
-		case 2:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_DATLEN_0;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_DATLEN_1 ;
-			break;
-		}	
-
-		case 3:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_DATLEN_1;
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_DATLEN_0 ;
-			break;
-		}
-	
-	}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-switch(channel_length){
-		case 0:
-		{
-		I2S->I2SCFGR &= ~SPI_I2SCFGR_CHLEN;
-			break;
-		}
-		
-		case 1:
-		{
-		I2S->I2SCFGR |= SPI_I2SCFGR_CHLEN;
-			break;
-		}	
-		
-	}
+		//PERIPHERAL CONFIGURATION
+		SPI1 ->I2SCFGR |= SPI_I2SCFGR_I2SMOD;  //I2S MODE 
+		SPI1 ->I2SCFGR |= SPI_I2SCFGR_I2SCFG_1; //MASTER TRANSMIT
+		SPI1 ->I2SCFGR |= SPI_I2SCFGR_I2SCFG_0 | SPI_I2SCFGR_I2SCFG_1 ; //MASTER RECEIVE
+		SPI1 ->I2SCFGR &= ~SPI_I2SCFGR_I2SSTD;  //I2S PHILLIPS STANDARD
+		SPI1 ->I2SCFGR |= SPI_I2SCFGR_DATLEN_0; //24BIT DATA LENGTH
+		SPI1 -> I2SPR |= (1<< 1 | 12);
+		SPI1 ->I2SCFGR |= SPI_I2SCFGR_I2SE;  //I2S ENABLED
 
 }
+//
+
