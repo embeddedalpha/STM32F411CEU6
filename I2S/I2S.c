@@ -182,3 +182,54 @@ void I2S5_Master_Init(void)
 }
 //
 
+void I2S_Master_Send_Data(SPI_TypeDef *I2S, uint32_t *r_channel,  uint32_t *l_channel, int length )
+{
+
+	int i = 0;
+	
+	if(I2S == SPI1)
+	{
+	GPIOA->BSRR |= GPIO_BSRR_BS4;
+	}
+	else if(I2S == SPI2)
+	{
+	GPIOB->BSRR |= GPIO_BSRR_BS9;
+	}
+	else if(I2S == SPI3)
+	{
+	GPIOA->BSRR |= GPIO_BSRR_BS15;
+	}
+	else if(I2S == SPI4)
+	{
+        GPIOB->BSRR |= GPIO_BSRR_BS12;
+	}
+	else if(I2S == SPI5)
+	{
+	GPIOB->BSRR |= GPIO_BSRR_BS1;
+	}
+				
+	for(i = 0; i < length; i++)
+	{
+	if(!(I2S -> SR & SPI_SR_CHSIDE))
+	{
+						
+	I2S -> DR = (0x0000FFFF & l_channel[i]);
+	while(!(I2S -> SR & SPI_SR_TXE));
+	I2S -> DR = (0xFFFF0000 & l_channel[i]);
+	while(!(I2S -> SR & SPI_SR_TXE));
+	}
+						
+	if((I2S -> SR & SPI_SR_CHSIDE))
+	{
+	I2S -> DR = (0x0000FFFF & r_channel[i]);
+	while(!(I2S -> SR & SPI_SR_TXE));
+	I2S -> DR = (0xFFFF0000 & r_channel[i]);
+	while(!(I2S -> SR & SPI_SR_TXE));
+	}
+					
+	}
+					
+					
+					
+}
+//	
