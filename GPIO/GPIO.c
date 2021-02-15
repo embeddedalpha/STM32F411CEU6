@@ -23,5 +23,22 @@ void GPIO_Init(GPIO_TypeDef *GPIO,uint8_t pin, uint8_t config)
 			GPIO->PUPDR |= (uint8_t)((0x03 & config)  << (pin * 2));
 
 }
+//
+
+void ADC_Pin_Init(uint8_t pin)
+{
+	GPIO_Init(GPIOA,pin,Analog_Pin);
+}
+//
 
 
+void SPI_Pin_Init(SPI_TypeDef *SPI){}
+void I2S_Pin_Init(SPI_TypeDef *SPI){}
+void I2C_Pin_Init(I2C_TypeDef *I2C){}
+void USART_Pin_Init(USART_TypeDef *USART){}
+void UART_Pin_Init(USART_TypeDef *USART){}
+void TIM_Pin_Init(TIM_TypeDef *TIM){}
+void SDIO_Pin_Init(SDIO_TypeDef *sdio){}
+	
+	
+	
