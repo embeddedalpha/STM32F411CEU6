@@ -4,6 +4,7 @@
 
 
 #include "stm32f411xe.h"
+#include "main.h"
 
 
 #define GEN_PushPull_Output                    0x2C
@@ -32,13 +33,22 @@ void GPIO_Init(GPIO_TypeDef *GPIO,uint8_t pin, uint8_t config);
 
 
 void ADC_Pin_Init(uint8_t pin);
-void SPI_Pin_Init(SPI_TypeDef *SPI);
+
+void SPI_Master_Pin_Init(SPI_TypeDef *SPI,uint8_t mode);
+
 void I2S_Pin_Init(SPI_TypeDef *SPI);
+
 void I2C_Pin_Init(I2C_TypeDef *I2C);
+
 void USART_Pin_Init(USART_TypeDef *USART);
+
 void UART_Pin_Init(USART_TypeDef *USART);
+
 void TIM_Pin_Init(TIM_TypeDef *TIM);
+
 void SDIO_Pin_Init(SDIO_TypeDef *sdio);
+
+
 
 
 
