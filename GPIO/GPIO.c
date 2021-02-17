@@ -32,7 +32,68 @@ void ADC_Pin_Init(uint8_t pin)
 //
 
 
-void SPI_Pin_Init(SPI_TypeDef *SPI){}
+void SPI_Master_Pin_Init(SPI_TypeDef *SPI,uint8_t mode)
+{
+	if(SPI == SPI1)
+	{
+	switch(mode)
+	{
+		case SPI_FULL_DUPLEX_MASTER:
+		{
+		
+		break;
+		}
+		//
+		case SPI_FULL_DUPLEX_SLAVE:
+		{
+		
+		break;
+		}
+		//
+		case SPI_HALF_DUPLEX_MASTER:
+		{
+		
+		break;
+		}
+		//
+		case SPI_HALF_DUPLEX_SLAVE:
+		{
+		
+		break;
+		}
+		//
+		case SPI_RECEIVE_ONLY_MASTER:
+		{
+		
+		break;
+		}
+    //
+		case SPI_RECEIVE_ONLY_SLAVE:
+		{
+		
+		break;
+		}	
+		case SPI_TRANSMIT_ONLY_MASTER:
+		{
+		
+		break;
+		}				
+	}
+	
+	}
+		else if(SPI == SPI2)
+		{}
+			else if(SPI == SPI3)
+			{}
+				else if(SPI == SPI4)
+				{}
+					else if(SPI == SPI5)
+					{}
+}
+//
+
+
+
 void I2S_Pin_Init(SPI_TypeDef *SPI){}
 void I2C_Pin_Init(I2C_TypeDef *I2C){}
 void USART_Pin_Init(USART_TypeDef *USART){}
