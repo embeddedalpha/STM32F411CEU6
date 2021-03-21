@@ -7,6 +7,17 @@
 
 
 #include "GPIO.h"
+/*
+
+I2C	1 2 3
+SPI	1 2 3 4 5
+I2S 1 2 3 4 5
+SDIO 1
+USART 1 2 6
+USB
+*/
+
+
 
 
 
@@ -22,6 +33,33 @@ void GPIO_Pin_Setup(GPIO_TypeDef *GPIO, int pin, int mode)
 	GPIO->PUPDR   |= ((mode & 0b00000110) >> 1) << (2 * pin);
 
 }
+
+
+void I2C1_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 6, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB6	SCL
+	GPIO_Pin_Setup(GPIOB, 7, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB6	SDA
+	GPIOB -> AFR[0] |= (4 << 28) | (4 << 24);
+}
+
+void I2C2_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 10, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB10	SCL
+	GPIO_Pin_Setup(GPIOB, 3, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB3	SDA
+	GPIOB -> AFR[0] |= (9 << 12);
+	GPIOB -> AFR[1] |= (4 << 12);
+}
+
+void I2C3_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA, 8, ALT_OPEN_DRAIN_OUT_PULL_UP); //PA8	SCL
+	GPIO_Pin_Setup(GPIOB, 4, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB4	SDA
+	GPIOB -> AFR[1] |= (4 << 0);
+	GPIOB -> AFR[0] |= (9 << 16);
+}
+
+
+
 
 
 void GPIO_Pin_Interrupt_Setup(GPIO_TypeDef *port, int pin, int type)
