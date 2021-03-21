@@ -1,59 +1,47 @@
-#ifndef _GPIO_H_
-#define _GPIO_H_
+/*
+ * GPIO.h
+ *
+ *  Created on: 21-Mar-2021
+ *      Author: Kunal
+ */
 
+#ifndef GPIO_GPIO_H_
+#define GPIO_GPIO_H_
 
-
+#include "stm32f4xx.h"
 #include "stm32f411xe.h"
-#include "main.h"
+
+#define GEN_PUSH_PULL_OUT	        0b0101100
+#define GEN_PUSH_PULL_OUT_PULL_UP	0b0101101
+#define GEN_PUSH_PULL_OUT_PULL_DW	0b0101110
+#define GEN_PUSH_PULL_OUT	        0b0101100
+#define GEN_PUSH_PULL_OUT_PULL_UP	0b0101101
+#define GEN_PUSH_PULL_OUT_PULL_DW	0b0101110
+
+#define ALT_PUSH_PULL_OUT	        0b1001100
+#define ALT_PUSH_PULL_OUT_PULL_UP	0b1001101
+#define ALT_PUSH_PULL_OUT_PULL_DW	0b1001110
+#define ALT_PUSH_PULL_OUT	        0b1001100
+#define ALT_PUSH_PULL_OUT_PULL_UP	0b1001101
+#define ALT_PUSH_PULL_OUT_PULL_DW	0b1001110
+
+#define FLOAT_PUSH_PULL_IN	      0b0000000
+#define INPUT_PULL_UP	            0b0000001
+#define INPUT_PULL_DW	            0b0000010
+#define INPUT_ANALOG      	      0b1100000
 
 
-#define GEN_PushPull_Output                    0x2C
-#define GEN_PushPull_Output_PullUP             0x2D
-#define GEN_PushPull_Output_PullDown           0x2E
-
-#define GEN_PushPull_Output_OpenDrain          0x3C
-#define GEN_PushPull_Output_OpenDrain_PullUP   0x3C
-#define GEN_PushPull_Output_OpenDrain_PullDown 0x3C
-
-#define ALT_PushPull_Output                    0x4C
-#define ALT_PushPull_Output_PullUP             0x4D
-#define ALT_PushPull_Output_PullDown           0x4E
-
-#define ALT_PushPull_Output_OpenDrain          0x5C
-#define ALT_PushPull_Output_OpenDrain_PullUP   0x5C
-#define ALT_PushPull_Output_OpenDrain_PullDown 0x5C
-
-#define Input_Floating	0x00
-#define Input_PullUP		0x01
-#define Input_PullDown	0x02
-#define Analog_Pin      0x60
+#define Rising_Edge     1
+#define Falling_Ege     2
+#define Rise_n_Fall_Edge 3
 
 
-void GPIO_Init(GPIO_TypeDef *GPIO,uint8_t pin, uint8_t config);
+void GPIO_Pin_Setup(GPIO_TypeDef *port, int pin, int mode);
 
+void GPIO_Pin_Interrupt_Setup(GPIO_TypeDef *port, int pin, int type);
 
-void ADC_Pin_Init(uint8_t pin);
-
-void SPI_Master_Pin_Init(SPI_TypeDef *SPI,uint8_t mode);
-
-void I2S_Pin_Init(SPI_TypeDef *SPI);
-
-void I2C_Pin_Init(I2C_TypeDef *I2C);
-
-void USART_Pin_Init(USART_TypeDef *USART);
-
-void UART_Pin_Init(USART_TypeDef *USART);
-
-void TIM_Pin_Init(TIM_TypeDef *TIM);
-
-void SDIO_Pin_Init(SDIO_TypeDef *sdio);
+void GPIO_Interrupt_Enable(int pin, int priority, IRQn_Type irqnum);
 
 
 
-
-
-
-
-
-
-#endif
+#endif /* GPIO_GPIO_H_ */
