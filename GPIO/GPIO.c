@@ -35,6 +35,16 @@ void GPIO_Pin_Setup(GPIO_TypeDef *GPIO, int pin, int mode)
 }
 
 
+void GPIO_Pin_Interrupt_Setup(GPIO_TypeDef *port, int pin, int type)
+{}
+
+
+void GPIO_Interrupt_Enable(int pin, int priority, IRQn_Type irqnum)
+{}
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
 void I2C1_Pin_Setup(void)
 {
 	GPIO_Pin_Setup(GPIOB, 6, ALT_OPEN_DRAIN_OUT_PULL_UP); //PB6	SCL
@@ -58,13 +68,34 @@ void I2C3_Pin_Setup(void)
 	GPIOB -> AFR[0] |= (9 << 16);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
 
+void SPI1_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 4, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 5, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 6, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 7, ALT_PUSH_PULL_OUT);	//MOSI
 
+	GPIOB -> AFR[0] |= (5 << 20) | (5 << 24) | (5 << 28);
+}
 
+void SPI2_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 12, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 10, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 14, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 15, ALT_PUSH_PULL_OUT);	//MOSI
 
-void GPIO_Pin_Interrupt_Setup(GPIO_TypeDef *port, int pin, int type)
-{}
+	GPIOB -> AFR[1] |= (5 << 8) | (5 << 24) | (5 << 28);
+}
 
+void SPI3_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 4, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 5, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 6, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 7, ALT_PUSH_PULL_OUT);	//MOSI
 
-void GPIO_Interrupt_Enable(int pin, int priority, IRQn_Type irqnum)
-{}
+	GPIOB -> AFR[0] |= (5 << 20) | (5 << 24) | (5 << 28);
+}
