@@ -147,3 +147,58 @@ void SDIO_MMC_8_Bit_Pin_Setup(void)
 	GPIOB -> AFR[1] |= (12 << 4*0) | (12 << 4*1) | (12 << 4*2) | (12 << 4*6) | (12 << 4*7);
 
 }
+
+void SDIO_MMC_4_Bit_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  6, ALT_PUSH_PULL_OUT);	//SDIO_CMD
+	GPIO_Pin_Setup(GPIOA,  8, ALT_PUSH_PULL_OUT);	//SDIO_D1
+	GPIO_Pin_Setup(GPIOA,  9, ALT_PUSH_PULL_OUT);	//SDIO_D2
+	GPIO_Pin_Setup(GPIOB,  4, ALT_PUSH_PULL_OUT);	//SDIO_D0
+	GPIO_Pin_Setup(GPIOB,  5, ALT_PUSH_PULL_OUT);	//SDIO_D3
+	GPIO_Pin_Setup(GPIOB,  15, ALT_PUSH_PULL_OUT);	//SDIO_CK
+
+	GPIOA -> AFR[0] |= (12 << 4*6);
+	GPIOA -> AFR[1] |= (12 << 4*0) | (12 << 4*1);
+	GPIOB -> AFR[0] |= (12 << 4*4) | (12 << 4*5);
+	GPIOB -> AFR[1] |= (12 << 4*7);
+
+}
+
+void SDIO_MMC_1_Bit_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  6, ALT_PUSH_PULL_OUT);	//SDIO_CMD
+	GPIO_Pin_Setup(GPIOB,  4, ALT_PUSH_PULL_OUT);	//SDIO_D0
+	GPIO_Pin_Setup(GPIOB,  15, ALT_PUSH_PULL_OUT);	//SDIO_CK
+	GPIOA -> AFR[0] |= (12 << 4*6);
+	GPIOB -> AFR[0] |= (12 << 4*4);
+	GPIOB -> AFR[1] |= (12 << 4*7);
+
+
+}
+
+void SD_4_Bit_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  6, ALT_PUSH_PULL_OUT);	//SDIO_CMD
+	GPIO_Pin_Setup(GPIOA,  8, ALT_PUSH_PULL_OUT);	//SDIO_D1
+	GPIO_Pin_Setup(GPIOA,  9, ALT_PUSH_PULL_OUT);	//SDIO_D2
+	GPIO_Pin_Setup(GPIOB,  4, ALT_PUSH_PULL_OUT);	//SDIO_D0
+	GPIO_Pin_Setup(GPIOB,  5, ALT_PUSH_PULL_OUT);	//SDIO_D3
+	GPIO_Pin_Setup(GPIOB,  15, ALT_PUSH_PULL_OUT);	//SDIO_CK
+
+	GPIOA -> AFR[0] |= (12 << 4*6);
+	GPIOA -> AFR[1] |= (12 << 4*0) | (12 << 4*1);
+	GPIOB -> AFR[0] |= (12 << 4*4) | (12 << 4*5);
+	GPIOB -> AFR[1] |= (12 << 4*7);
+
+}
+
+void SD_1_Bit_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  6, ALT_PUSH_PULL_OUT);	//SDIO_CMD
+	GPIO_Pin_Setup(GPIOB,  4, ALT_PUSH_PULL_OUT);	//SDIO_D0
+	GPIO_Pin_Setup(GPIOB,  15, ALT_PUSH_PULL_OUT);	//SDIO_CK
+	GPIOA -> AFR[0] |= (12 << 4*6);
+	GPIOB -> AFR[0] |= (12 << 4*4);
+	GPIOB -> AFR[1] |= (12 << 4*7);
+
+}
