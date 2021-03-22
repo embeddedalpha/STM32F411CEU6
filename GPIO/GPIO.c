@@ -201,4 +201,5 @@ void SD_1_Bit_Pin_Setup(void)
 	GPIOB -> AFR[0] |= (12 << 4*4);
 	GPIOB -> AFR[1] |= (12 << 4*7);
 
+
 }
