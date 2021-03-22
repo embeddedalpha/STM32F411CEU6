@@ -99,3 +99,28 @@ void SPI3_Pin_Setup(void)
 
 	GPIOB -> AFR[0] |= (5 << 20) | (5 << 24) | (5 << 28);
 }
+
+void SPI4_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 12, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 13, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOA, 11, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOA,  1, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[1] |= 6 << 4*5;
+	GPIOA -> AFR[1] |= 6 << 4*3;
+	GPIOA -> AFR[0] |= 5 << 4*1;
+}
+
+void SPI5_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB,  1, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB,  0, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOA, 12, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOA,  5, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[0] |= (6 << 0) ;
+	GPIOA -> AFR[1] |= (6 << 4*4);
+	GPIOA -> AFR[0] |= (6 << 4*5);
+
+}
