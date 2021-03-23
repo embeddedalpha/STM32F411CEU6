@@ -203,3 +203,59 @@ void SD_1_Bit_Pin_Setup(void)
 
 
 }
+
+
+void I2S1_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 4, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 5, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 6, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 7, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[0] |= (5 << 20) | (5 << 24) | (5 << 28);
+}
+
+void I2S2_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 12, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 10, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 14, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 15, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[1] |= (5 << 8) | (5 << 24) | (5 << 28);
+}
+
+void I2S3_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 4, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 5, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOB, 6, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOB, 7, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[0] |= (5 << 20) | (5 << 24) | (5 << 28);
+}
+
+void I2S4_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB, 12, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB, 13, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOA, 11, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOA,  1, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[1] |= 6 << 4*5;
+	GPIOA -> AFR[1] |= 6 << 4*3;
+	GPIOA -> AFR[0] |= 5 << 4*1;
+}
+
+void I2S5_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOB,  1, GEN_PUSH_PULL_OUT);	//NSS
+	GPIO_Pin_Setup(GPIOB,  0, ALT_PUSH_PULL_OUT);	//SCK
+	GPIO_Pin_Setup(GPIOA, 12, ALT_PUSH_PULL_OUT);	//MISO
+	GPIO_Pin_Setup(GPIOA,  5, ALT_PUSH_PULL_OUT);	//MOSI
+
+	GPIOB -> AFR[0] |= (6 << 0) ;
+	GPIOA -> AFR[1] |= (6 << 4*4);
+	GPIOA -> AFR[0] |= (6 << 4*5);
+
+}
