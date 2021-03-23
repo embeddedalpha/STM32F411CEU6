@@ -69,4 +69,8 @@ void UART1_Pin_Setup(void);
 void UART1_HW_Flow_Control_Pin_Setup(void);
 void USART1_Pin_Setup(void);
 
+void UART2_Pin_Setup(void);
+void UART2_HW_Flow_Control_Pin_Setup(void);
+void USART2_Pin_Setup(void);
+
 #endif /* GPIO_GPIO_H_ */
