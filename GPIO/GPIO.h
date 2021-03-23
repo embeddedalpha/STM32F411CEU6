@@ -53,10 +53,18 @@ void SPI3_Pin_Setup(void);
 void SPI4_Pin_Setup(void);
 void SPI5_Pin_Setup(void);
 
+void I2S1_Pin_Setup(void);
+void I2S2_Pin_Setup(void);
+void I2S3_Pin_Setup(void);
+void I2S4_Pin_Setup(void);
+void I2S5_Pin_Setup(void);
+
 void SDIO_MMC_8_Bit_Pin_Setup(void);
 void SDIO_MMC_4_Bit_Pin_Setup(void);
 void SDIO_MMC_1_Bit_Pin_Setup(void);
 void SD_4_Bit_Pin_Setup(void);
 void SD_1_Bit_Pin_Setup(void);
+
+
 
 #endif /* GPIO_GPIO_H_ */
