@@ -65,6 +65,8 @@ void SDIO_MMC_1_Bit_Pin_Setup(void);
 void SD_4_Bit_Pin_Setup(void);
 void SD_1_Bit_Pin_Setup(void);
 
-
+void UART1_Pin_Setup(void);
+void UART1_HW_Flow_Control_Pin_Setup(void);
+void USART1_Pin_Setup(void);
 
 #endif /* GPIO_GPIO_H_ */
