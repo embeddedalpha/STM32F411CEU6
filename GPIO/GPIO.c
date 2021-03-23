@@ -204,6 +204,7 @@ void SD_1_Bit_Pin_Setup(void)
 
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
 
 void I2S1_Pin_Setup(void)
 {
@@ -259,3 +260,35 @@ void I2S5_Pin_Setup(void)
 	GPIOA -> AFR[0] |= (6 << 4*5);
 
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+void UART1_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA, 9, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 10, ALT_PUSH_PULL_OUT);	//RX
+
+	GPIOA -> AFR[1] |= (7 << 8) | (7  << 4);
+}
+
+void UART1_HW_Flow_Control_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  9, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 10, ALT_PUSH_PULL_OUT);	//RX
+	GPIO_Pin_Setup(GPIOA, 11, ALT_PUSH_PULL_OUT);	//CTS
+	GPIO_Pin_Setup(GPIOA, 12, ALT_PUSH_PULL_OUT);	//RTS
+
+	GPIOA -> AFR[1] |= (7 << 8) | (7  << 4) | (7  << 12) | (7  << 16);
+}
+
+void USART1_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA,  8, ALT_PUSH_PULL_OUT);	//CK
+	GPIO_Pin_Setup(GPIOA,  9, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 10, ALT_PUSH_PULL_OUT);	//RX
+
+	GPIOA -> AFR[1] |= (7 << 8) | (7  << 4) | (7 << 0);
+}
+
