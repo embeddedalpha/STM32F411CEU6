@@ -292,3 +292,33 @@ void USART1_Pin_Setup(void)
 	GPIOA -> AFR[1] |= (7 << 8) | (7  << 4) | (7 << 0);
 }
 
+
+
+void UART2_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA, 2, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 3, ALT_PUSH_PULL_OUT);	//RX
+
+	GPIOA -> AFR[0] |= (7 << 4) | (7  << 0);
+}
+
+void UART2_HW_Flow_Control_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA, 0, ALT_PUSH_PULL_OUT);	//CTS
+	GPIO_Pin_Setup(GPIOA, 1, ALT_PUSH_PULL_OUT);	//RTS
+	GPIO_Pin_Setup(GPIOA, 2, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 3, ALT_PUSH_PULL_OUT);	//RX
+
+	GPIOA -> AFR[0] |= (7 << 12) | (7  << 8) | (7  << 4) | (7  << 0);
+}
+
+void USART2_Pin_Setup(void)
+{
+	GPIO_Pin_Setup(GPIOA, 2, ALT_PUSH_PULL_OUT);	//TX
+	GPIO_Pin_Setup(GPIOA, 3, ALT_PUSH_PULL_OUT);	//RX
+	GPIO_Pin_Setup(GPIOA, 4, ALT_PUSH_PULL_OUT);	//CK
+
+	GPIOA -> AFR[0] |= (7 << 8) | (7  << 4) | (7 << 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
