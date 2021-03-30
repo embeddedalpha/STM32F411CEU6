@@ -73,6 +73,99 @@ void SPI_Master_Init(SPI_Config SPI)
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
+void SPI_Master_TX(SPI_Config SPI, uint16_t data)
+{
+	SPI.SPI->DR = data;
+	while(!(SPI.SPI -> SR & SPI_SR_TXE));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+uint16_t SPI_Master_RX(SPI_Config SPI)
+{
+	SPI_Master_TX(SPI,0x00);
+	while(!(SPI.SPI -> SR & SPI_SR_RXNE));
+	return SPI.SPI -> DR;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+void SPI1_CSS_HIGH(void)
+{
+	GPIOA -> BSRR |= GPIO_BSRR_BS4;
+}
+
+void SPI1_CSS_LOW(void)
+{
+	GPIOA -> BRR |= GPIO_BRR_BR4;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+void SPI2_CSS_HIGH(void)
+{
+	GPIOB -> BSRR |= GPIO_BSRR_BS12;
+}
+
+void SPI2_CSS_LOW(void)
+{
+	GPIOB -> BRR |= GPIO_BRR_BR12;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+void SPI3_CSS_HIGH(void)
+{
+	GPIOB -> BSRR |= GPIO_BSRR_BS4;
+}
+
+void SPI3_CSS_LOW(void)
+{
+	GPIOB -> BRR |= GPIO_BRR_BR4;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+void SPI4_CSS_HIGH(void)
+{
+	GPIOB -> BSRR |= GPIO_BSRR_BS12;
+}
+
+void SPI4_CSS_LOW(void)
+{
+	GPIOB -> BRR |= GPIO_BRR_BR12;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+void SPI5_CSS_HIGH(void)
+{
+	GPIOB -> BSRR |= GPIO_BSRR_BS1;
+}
+
+void SPI5_CSS_LOW(void)
+{
+	GPIOB -> BRR |= GPIO_BRR_BR1;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void SPI_Disable(SPI_Config SPI)
+{
+
+while(SPI.SPI -> SR & SPI_SR_RXNE);
+while(SPI.SPI -> SR & SPI_SR_TXE);
+while(~(SPI.SPI -> SR & SPI_SR_BSY));
+SPI.SPI -> CR1 &= ~SPI_CR1_SPE;
+
+}
+
+
 /*
 void SPI1_IRQHandler(void)
 {
@@ -101,4 +194,3 @@ void SPI1_IRQHandler(void)
 		//Your code goes here
 	}
 */
-
