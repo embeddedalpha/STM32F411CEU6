@@ -37,15 +37,15 @@ typedef struct SPI_Config
 
 void SPI_Master_Init(SPI_Config SPI);
 
-void SPI_Master_TX(SPI_Config SPI, uint16_t data);
+void SPI_Master_TX(SPI_Config SPI, uint32_t data);
 
-uint16_t SPI_Master_RX(SPI_Config SPI);
+uint32_t SPI_Master_RX(SPI_Config SPI);
 
 void SPI_Slave_Init(SPI_Config SPI);
 
-void SPI_Slave_TX(SPI_Config SPI, uint16_t data);
+void SPI_Slave_TX(SPI_Config SPI, uint32_t data);
 
-uint16_t SPI_Slave_RX(SPI_Config SPI);
+uint32_t SPI_Slave_RX(SPI_Config SPI);
 
 void SPI_Disable(SPI_Config SPI);
 
@@ -58,6 +58,16 @@ void SPI2_CSS_HIGH(void);
 
 void SPI2_CSS_LOW(void);
 
+void SPI3_CSS_HIGH(void);
+
+void SPI3_CSS_LOW(void);
+
+void SPI4_CSS_HIGH(void);
+
+void SPI4_CSS_LOW(void);
+
+void SPI5_CSS_HIGH(void);
+
+void SPI5_CSS_LOW(void);
 
 #endif /* SPI_SPI_H_ */
-
