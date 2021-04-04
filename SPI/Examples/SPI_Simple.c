@@ -7,7 +7,7 @@
 
 int main(void)
 {
-
+	uint8_t c;
 
 SPI1_Pin_Setup();
 struct SPI_Config X;
@@ -25,5 +25,6 @@ SPI_Master_Init(X);
 		SPI1_CSS_HIGH();
 		SPI_Master_TX(X, 0x0A);
 		SPI1_CSS_LOW();
+		c = SPI_Master_RX(X);
 	}
 }
