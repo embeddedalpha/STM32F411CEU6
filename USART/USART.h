@@ -32,8 +32,9 @@
 #define Baud_10500000	1
 
 
-struct USART_Config
+typedef struct USART_Config
 {
+	USART_TypeDef *USART;
 	bool word_length;
 	bool parity;
 	bool tx_int;
@@ -49,7 +50,17 @@ struct USART_Config
 	bool dma_tx;
 	bool dma_rx;
 
-};
+}USART_Config;
+
+
+void USART_Init(USART_Config USART);
+
+void USART_TX(USART_Config USART, uint8_t data);
+uint8_t USART_RX(USART_Config USART);
+
+void USART_TX_HFC(USART_Config USART, uint8_t data);
+uint8_t USART_RX_HFC(USART_Config USART);
+
 
 
 
