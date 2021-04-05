@@ -13,8 +13,8 @@
 #include "stdbool.h"
 #include "GPIO/GPIO.h"
 
-#define Baud_2400		  4375
-#define Baud_9600		  1093.75
+#define Baud_2400		4375
+#define Baud_9600		1093.75
 #define Baud_19200		546.875
 #define Baud_38400		273.5
 #define Baud_57600		182.25
@@ -32,11 +32,25 @@
 #define Baud_10500000	1
 
 
-struct USART_Config{
+struct USART_Config
+{
+	bool word_length;
+	bool parity;
+	bool tx_int;
+	bool rx_int;
+	bool tx_enable;
+	bool rx_enable;
+	uint8_t stop_bits;
+	bool clock_enable;
+	bool clock_polarity;
+	bool clock_phase;
+	bool ctse_enable;
+	bool rtse_enable;
+	bool dma_tx;
+	bool dma_rx;
 
 };
 
 
 
 #endif /* USART_USART_H_ */
-
