@@ -21,7 +21,6 @@ MCU_Clock_Setup();
 struct I2C_Config X;
 X.I2C = I2C1 (or I2C2, I2C3);
 x.mode = Fast_Mode (or Normal Mode)
-
 ```
 
 ### Pass the struct to intialization function.
