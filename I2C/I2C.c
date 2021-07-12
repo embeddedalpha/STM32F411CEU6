@@ -163,3 +163,33 @@ void I2C_Master_Send_NACK(I2C_Config I2C)
 {
 	I2C.I2C -> CR1 &= ~I2C_CR1_ACK;
 }
+
+
+
+
+void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int length)
+{
+		uint16_t reg;
+	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
+	I2C.I2C -> CR1 |= I2C_CR1_START;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
+	I2C.I2C -> DR = (address << 1) | 0x00;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
+	reg = 0x00;
+	reg = I2C.I2C -> SR1;
+	reg = I2C.I2C -> SR2;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
+	for(int i = 0 ; i < length; i++)
+	{
+		I2C.I2C -> DR = buffer[i];
+		while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
+		while(!(I2C.I2C -> SR1 & I2C_SR1_BTF)){}
+		reg = 0x00;
+		reg = I2C.I2C -> SR1;
+		reg = I2C.I2C -> SR2;
+	}
+	I2C.I2C -> CR1 |= I2C_CR1_STOP;
+	reg = I2C.I2C -> SR1;
+	reg = I2C.I2C -> SR2;
+	
+}
