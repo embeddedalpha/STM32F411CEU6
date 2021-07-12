@@ -76,43 +76,30 @@ int I2C_Master_Init(I2C_Config I2C)
 		I2C.I2C -> CR1 |= I2C_CR1_PE;
 		I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	}
-
-//	if((I2C.I2C->SR2 & I2C_SR2_BUSY) == 1)
-
-
 return 0;
 }
 
 
+
 void I2C_Master_Start(I2C_Config I2C)
 {
-	if(READ_BIT(I2C.I2C -> SR2, I2C_SR2_BUSY) == I2C_SR2_BUSY)
-	{
-		for(int i = 0; i < 1000; i++)
-		{
-			READ_BIT(I2C.I2C -> SR2, I2C_SR2_BUSY);
-			I2C.I2C -> CR1 |= I2C_CR1_STOP;
-			READ_REG(I2C.I2C -> DR);
-		}
-	}
-
+	uint16_t reg;
+	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
 	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
-	 reg1 = I2C1 ->SR1;
+	 reg = I2C1 ->SR1;
 }
+
 
 void I2C_Master_Send_Address(I2C_Config I2C, char address)
 {
+	uint16_t reg1;
 	I2C.I2C -> DR = (address << 1) | 0x00;
-//	while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
-
-	while((I2C.I2C -> SR1 & I2C_SR1_AF) == I2C_SR1_AF)
-	{
-		I2C.I2C -> DR = (address << 1) | 0x00;
-	}
-//		while(!(I2C.I2C->SR1 & I2C_SR1_ADDR));
-		reg1 = I2C.I2C -> SR1;
-		reg2 = I2C.I2C -> SR2;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
+	reg = 0x00;
+	reg = I2C.I2C -> SR1;
+	reg = I2C.I2C -> SR2;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
 
 }
 
