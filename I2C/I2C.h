@@ -43,4 +43,6 @@ void I2C_Master_Send_NACK(I2C_Config I2C);
 
 void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int length);
 
+void I2C_Receive_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int length);
+
 #endif /* I2C_I2C_H_ */
