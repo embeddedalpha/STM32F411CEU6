@@ -180,3 +180,28 @@ void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int lengt
 	reg = I2C.I2C -> SR2;
 	
 }
+
+
+void I2C_Receive_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, uint16_t length)
+{
+	uint16_t reg, i;
+	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
+	I2C.I2C -> CR1 |= I2C_CR1_ACK;
+	I2C.I2C -> CR1 |= I2C_CR1_START;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
+	I2C.I2C -> DR = (address << 1) | 0x01;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
+	reg = 0x00;
+	reg = I2C.I2C -> SR1;
+	reg = I2C.I2C -> SR2;
+	for( i =0; i < (length - 1); i++){
+	while(!(I2C.I2C -> SR1 & I2C_SR1_RXNE)){}
+	buffer[i] = I2C.I2C -> DR;
+	I2C.I2C -> CR1 |= I2C_CR1_ACK;
+	}
+	i++;
+	buffer[i] = I2C.I2C -> DR;
+	I2C.I2C -> CR1 &= ~I2C_CR1_ACK;
+	I2C.I2C -> CR1 |= I2C_CR1_STOP;
+
+}
