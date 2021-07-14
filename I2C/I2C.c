@@ -156,6 +156,10 @@ void I2C_Master_Send_NACK(I2C_Config I2C)
 
 void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int length)
 {
+	if((I2C.I2C -> CR1 & I2C_CR1_PE) != I2C_CR1_PE)
+	{
+		I2C.I2C -> CR1 |= I2C_CR1_PE;
+	}
 		uint16_t reg;
 	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
@@ -185,6 +189,10 @@ void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int lengt
 void I2C_Receive_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, uint16_t length)
 {
 	uint16_t reg, i;
+	if((I2C.I2C -> CR1 & I2C_CR1_PE) != I2C_CR1_PE)
+	{
+		I2C.I2C -> CR1 |= I2C_CR1_PE;
+	}
 	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	I2C.I2C -> CR1 |= I2C_CR1_ACK;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
