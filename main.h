@@ -17,7 +17,7 @@ __STATIC_INLINE void MCU_Clock_Setup(void)
 {
 	uint8_t pll_m = 25;
 	uint8_t pll_n = 192;
-	uint8_t pll_p = 2;
+	uint8_t pll_p = 0;
 	uint8_t pll_q = 4;
 
 	RCC->PLLCFGR = 0x00000000;
@@ -28,17 +28,15 @@ __STATIC_INLINE void MCU_Clock_Setup(void)
 	PWR ->CR |= PWR_CR_VOS;
 	FLASH -> ACR |= FLASH_ACR_ICEN | FLASH_ACR_PRFTEN | FLASH_ACR_DCEN |
 			FLASH_ACR_LATENCY_3WS;
-//	RCC->PLLCFGR |= (pll_q << 24) | (pll_p << 16) | (pll_n << 6) | (pll_m << 0);
-//	RCC ->PLLCFGR |= 1 << 22;
-RCC->PLLCFGR = 0x4403019;
+	RCC->PLLCFGR |= (pll_q << 24) | (pll_p << 16) | (pll_n << 6) | (pll_m << 0);
+	RCC ->PLLCFGR |= 1 << 22;
+//	RCC->PLLCFGR = 0x4403019;
 	RCC -> CFGR |= RCC_CFGR_HPRE_DIV1;
 	RCC -> CFGR |= RCC_CFGR_PPRE1_DIV2;
 	RCC -> CFGR |= RCC_CFGR_PPRE2_DIV1;
 //	RCC -> APB2ENR |= 0x4000;
 	RCC -> CR |= RCC_CR_PLLON;
 	while(!(RCC->CR & RCC_CR_PLLRDY)){}
-//	RCC -> CR |= RCC_CR_PLLI2SON;
-//	while(!(RCC->CR & RCC_CR_PLLI2SRDY)){}
 	RCC -> CFGR |= RCC_CFGR_SW_PLL;
 	while((RCC -> CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL);
 SystemCoreClockUpdate();
