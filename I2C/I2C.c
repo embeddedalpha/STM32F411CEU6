@@ -20,11 +20,16 @@ int I2C_Master_Init(I2C_Config I2C)
 		GPIOB -> MODER = 0x00000000;
 		GPIOB -> MODER  |= 0xa280;
 		GPIOB -> OTYPER |= GPIO_OTYPER_OT6 | GPIO_OTYPER_OT7;
+//		GPIOB -> OTYPER |= 0xc0;
 		GPIOB -> OSPEEDR |= GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR7;
+//		GPIOB -> OSPEEDR |= 0xf0c0;
 		GPIOB -> PUPDR |= GPIO_PUPDR_PUPD6_0 | GPIO_PUPDR_PUPD7_0;
+//		GPIOB -> PUPDR |= 0x5100;
 		GPIOB -> AFR[0] |= (4 << 24) | (4 << 28);
 		GPIOB -> IDR = 0x0000;
 //		GPIOB -> IDR = 0xf7f8;
+
+
 
 	}
 	if (I2C.I2C == I2C2)
@@ -66,6 +71,7 @@ int I2C_Master_Init(I2C_Config I2C)
 		I2C.I2C -> CR2 = 0x30;
 		I2C.I2C -> CCR = 0x8028; // 0x8F0 cd5
 		I2C.I2C -> TRISE = 0xf;
+//				I2C.I2C -> CR1 |= I2C_CR1_NOSTRETCH;
 		I2C.I2C -> CR1 |= I2C_CR1_PE;
 	}
 	else
@@ -76,9 +82,12 @@ int I2C_Master_Init(I2C_Config I2C)
 		I2C.I2C -> CR1 |= I2C_CR1_PE;
 		I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	}
+
+//	if((I2C.I2C->SR2 & I2C_SR2_BUSY) == 1)
+
+
 return 0;
 }
-
 
 
 void I2C_Master_Start(I2C_Config I2C)
@@ -87,18 +96,17 @@ void I2C_Master_Start(I2C_Config I2C)
 	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
 	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
-	 reg = I2C1 ->SR1;
+	 reg = I2C.I2C ->SR1;
 }
-
 
 void I2C_Master_Send_Address(I2C_Config I2C, char address)
 {
 	uint16_t reg1;
 	I2C.I2C -> DR = (address << 1) | 0x00;
 	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
-	reg = 0x00;
-	reg = I2C.I2C -> SR1;
-	reg = I2C.I2C -> SR2;
+	reg1 = 0x00;
+	reg1 = I2C.I2C -> SR1;
+	reg1 = I2C.I2C -> SR2;
 	while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
 
 }
@@ -149,67 +157,4 @@ void I2C_Master_Stop(I2C_Config I2C)
 void I2C_Master_Send_NACK(I2C_Config I2C)
 {
 	I2C.I2C -> CR1 &= ~I2C_CR1_ACK;
-}
-
-
-
-
-void I2C_Send_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, int length)
-{
-	if((I2C.I2C -> CR1 & I2C_CR1_PE) != I2C_CR1_PE)
-	{
-		I2C.I2C -> CR1 |= I2C_CR1_PE;
-	}
-		uint16_t reg;
-	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
-	I2C.I2C -> CR1 |= I2C_CR1_START;
-	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
-	I2C.I2C -> DR = (address << 1) | 0x00;
-	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
-	reg = 0x00;
-	reg = I2C.I2C -> SR1;
-	reg = I2C.I2C -> SR2;
-	while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
-	for(int i = 0 ; i < length; i++)
-	{
-		I2C.I2C -> DR = buffer[i];
-		while(!(I2C.I2C -> SR1 & I2C_SR1_TXE)){}
-		while(!(I2C.I2C -> SR1 & I2C_SR1_BTF)){}
-		reg = 0x00;
-		reg = I2C.I2C -> SR1;
-		reg = I2C.I2C -> SR2;
-	}
-	I2C.I2C -> CR1 |= I2C_CR1_STOP;
-	reg = I2C.I2C -> SR1;
-	reg = I2C.I2C -> SR2;
-	
-}
-
-
-void I2C_Receive_Buffer(I2C_Config I2C, uint8_t address, uint8_t *buffer, uint16_t length)
-{
-	uint16_t reg, i;
-	if((I2C.I2C -> CR1 & I2C_CR1_PE) != I2C_CR1_PE)
-	{
-		I2C.I2C -> CR1 |= I2C_CR1_PE;
-	}
-	I2C.I2C -> CR1 &= ~I2C_CR1_POS;
-	I2C.I2C -> CR1 |= I2C_CR1_ACK;
-	I2C.I2C -> CR1 |= I2C_CR1_START;
-	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
-	I2C.I2C -> DR = (address << 1) | 0x01;
-	while(!(I2C.I2C -> SR1 & I2C_SR1_ADDR)){}
-	reg = 0x00;
-	reg = I2C.I2C -> SR1;
-	reg = I2C.I2C -> SR2;
-	for( i =0; i < (length - 1); i++){
-	while(!(I2C.I2C -> SR1 & I2C_SR1_RXNE)){}
-	buffer[i] = I2C.I2C -> DR;
-	I2C.I2C -> CR1 |= I2C_CR1_ACK;
-	}
-	i++;
-	buffer[i] = I2C.I2C -> DR;
-	I2C.I2C -> CR1 &= ~I2C_CR1_ACK;
-	I2C.I2C -> CR1 |= I2C_CR1_STOP;
-
 }
