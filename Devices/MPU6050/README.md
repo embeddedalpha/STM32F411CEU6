@@ -26,4 +26,5 @@ uint16_t gyro_x;
 uint16_t gyro_y;
 uint16_t gyro_z;
 MPU6050_I2C_Get_Raw_Data(&accl_x, &accl_y, &accl_z, &gyro_x, &gyro_y, &gyro_z);
+MPU6050_I2C_Get_Filtered_Data(&accl_x, &accl_y, &accl_z, &gyro_x, &gyro_y, &gyro_z);
 ```
