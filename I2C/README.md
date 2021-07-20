@@ -1,5 +1,7 @@
 # I2C Bare Metal Driver
 
+### To better understand the code, read the [Medium](https://kunalsalvi63.medium.com/bare-metal-i2c-driver-for-stm32f411cex-3cc600fdcc05) article I wrote! ✨
+
 ### Functions:
 ```
 int I2C_Master_Init(I2C_Config I2C);
