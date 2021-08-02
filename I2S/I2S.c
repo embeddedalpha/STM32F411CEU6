@@ -114,4 +114,24 @@ void I2S_Master_Transmit(SPI_TypeDef *I2S, uint16_t tx)
 }
 
 
+uint32_t I2S_Read_24Bit_Left_Channel(SPI_TypeDef *I2S)
+{
+	uiint32_t x;
+	while(!(I2S -> SR & SPI_SR_RXNE)){}
+	if ((I2S -> SR & SPI_SR_CHSIDE) == 0)
+	{
+		x = I2S -> DR;
+	}
+	return x;
+}
 
+uint32_t I2S_Read_24Bit_Right_Channel(SPI_TypeDef *I2S)
+{
+	uiint32_t x;
+	while(!(I2S -> SR & SPI_SR_RXNE)){}
+	if ((I2S -> SR & SPI_SR_CHSIDE) == 1)
+	{
+		x = I2S -> DR;
+	}
+	return x;
+}
