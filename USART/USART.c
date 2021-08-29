@@ -1,46 +1,79 @@
 /*
  * USART.c
  *
- *  Created on: 05-Apr-2021
+ *  Created on: 30-Aug-2021
  *      Author: Kunal
  */
-
-
 
 #include "USART.h"
 
 
-void USART_Init(USART_Config USART)
+void UART_Init(Serial UART)
 {
-	if(USART.USART == USART1)
+	if(UART.port == USART1)
 	{
-		USART1_Pin_Setup();
+		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+		RCC -> APB2ENR |= RCC_APB2ENR_USART1EN;
+		GPIOA -> MODER   |= (2 << 18) | (2 << 20);	//9 -> tx	10 -> rx
+		GPIOA -> OTYPER  |= (0 << 9)  | (0 << 10) ;
+		GPIOA -> OSPEEDR |= (3 << 9)  | (3 << 10);
+		GPIOA -> PUPDR   |= (0 << 18) | (0 << 20);
+		GPIOA -> AFR[1]  |= (7 << 4)  | (5 << 8);
+		if(UART.hardware_control == 1)
+		{
+			GPIOA -> MODER   |= (2 << 22)  | (2 << 24);	//11 -> CTS 12->RTS
+			GPIOA -> OTYPER  |= (0 << 12)  | (0 << 11) ;
+			GPIOA -> OSPEEDR |= (3 << 12)  | (3 << 11);
+			GPIOA -> PUPDR   |= (0 << 22)  | (0 << 24);
+			GPIOA -> AFR[1]  |= (7 << 12)  | (5 << 16);
+		}
+
 	}
-	if(USART.USART == USART2)
+	if(UART.port == USART2)
 	{
-		USART2_Pin_Setup();
+		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+		RCC -> APB1ENR |= RCC_APB1ENR_USART2EN;
+		GPIOA -> MODER   |= (2 << 4)  | (2 << 6);	//2 -> tx	3 -> rx
+		GPIOA -> OTYPER  |= (0 << 2)  | (0 << 3) ;
+		GPIOA -> OSPEEDR |= (3 << 4)  | (3 << 6);
+		GPIOA -> PUPDR   |= (0 << 4)  | (0 << 6);
+		GPIOA -> AFR[0]  |= (7 << 8)  | (5 << 12);
+		if(UART.hardware_control == 1)
+		{
+			GPIOA -> MODER   |= (2 << 0)  | (2 << 2);	//0 -> CTS 1->RTS
+			GPIOA -> OTYPER  |= (0 << 0)  | (0 << 1) ;
+			GPIOA -> OSPEEDR |= (3 << 0)  | (3 << 2);
+			GPIOA -> PUPDR   |= (0 << 0)  | (0 << 2);
+			GPIOA -> AFR[1]  |= (7 << 0)  | (5 << 4);
+		}
+
+
 	}
 
-}
 
-void USART_TX(USART_Config USART, uint8_t data)
-{
 
-}
+	UART.port ->CR1 |= USART_CR1_UE;
+	UART.port ->BRR = (int)(SystemCoreClock / (16 * UART.baudrate)) << 4;
 
-uint8_t USART_RX(USART_Config USART)
-{
 
-}
+	if (UART.TX_DMA == 1) UART.port -> CR3 |= USART_CR3_DMAT;
+	else                  UART.port -> CR3 &= ~USART_CR3_DMAT;
+	if (UART.RX_DMA == 1) UART.port -> CR3 |= USART_CR3_DMAR;
+	else                  UART.port -> CR3 &= ~USART_CR3_DMAR;
 
-void USART_TX_HFC(USART_Config USART, uint8_t data)
-{
+	if(UART.mode == Half_Duplex) UART.port -> CR3 |= USART_CR3_HDSEL;
+	if(UART.mode == Full_Duplex) UART.port -> CR3 &= ~USART_CR3_HDSEL;
 
-}
+	if(UART.hardware_control == 1)
+	{
+		UART.port -> CR3 |= USART_CR3_CTSE | USART_CR3_RTSE;
+	}
+	else
+	{
+		UART.port -> CR3 &= ~(USART_CR3_CTSE | USART_CR3_RTSE);
+	}
 
-uint8_t USART_RX_HFC(USART_Config USART)
-{
-
+	UART.port ->CR1 |= USART_CR1_TE | USART_CR1_RE  ;
 }
 
 
