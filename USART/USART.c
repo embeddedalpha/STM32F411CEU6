@@ -7,6 +7,7 @@
 
 #include "USART.h"
 
+//********************************	Asynchronous Communication	********************************
 
 void UART_Init(Serial UART)
 {
@@ -76,4 +77,30 @@ void UART_Init(Serial UART)
 	UART.port ->CR1 |= USART_CR1_TE | USART_CR1_RE  ;
 }
 
+
+void UART_Transmit(Serial UART, char *data)
+{
+int x = strlen(data);
+for(int n = 0; n < x; n++)
+{
+	USART1 ->DR = (data[n]);
+	USART1 -> CR1 |= USART_CR1_SBK;
+	while((USART1->SR & USART_SR_TC) == 0);
+}
+
+}
+char UART_Receive(Serial UART)
+{
+	while((UART.port ->SR & USART_SR_RXNE) == 0);
+	return UART.port-> DR;
+}
+
+char USART_Transceive(Serial UART, char byte)
+{
+	USART1 ->DR = (byte);
+	USART1 -> CR1 |= USART_CR1_SBK;
+	while((USART1->SR & USART_SR_TC) == 0);
+	while((UART.port ->SR & USART_SR_RXNE) == 0);
+	return UART.port-> DR;
+}
 
