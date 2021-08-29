@@ -24,8 +24,19 @@ typedef struct UART
 
 }Serial;
 
-
+//********************************	Asynchronous Communication	********************************
 
 void UART_Init(Serial UART);
+void UART_Transmit(Serial UART, char *data);
+char UART_Receive(Serial UART);
+char UART_Transceive(Serial UART);
+
+
+//********************************	Synchronous Communication	********************************
+
+void USART_Init(Serial UART);
+void USART_Transmit(Serial UART, char *data);
+char USART_Receive(Serial UART);
+char USART_Transceive(Serial UART);
 
 #endif /* USART_USART_H_ */
