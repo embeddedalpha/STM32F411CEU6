@@ -37,6 +37,6 @@ char UART_Transceive(Serial UART);
 void USART_Init(Serial UART);
 void USART_Transmit(Serial UART, char *data);
 char USART_Receive(Serial UART);
-char USART_Transceive(Serial UART);
+char USART_Transceive(Serial UART, char byte);
 
 #endif /* USART_USART_H_ */
