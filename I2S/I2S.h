@@ -8,26 +8,33 @@
 #ifndef I2S_I2S_H_
 #define I2S_I2S_H_
 
-#include "stm32f411xe.h"
-#include "stm32f4xx.h"
+#include "main.h"
 #include "stdbool.h"
 
-#define channel_length_16_bit 0;
-#define channel_length_32_bit 1;
+#define I2S1 SPI1
+#define I2S2 SPI2
+#define I2S3 SPI3
+#define I2S4 SPI4
+#define I2S5 SPI5
 
-#define data_length_16_bit 0;
-#define data_length_24_bit 1;
-#define data_length_32_bit 2;
+#define I2S_Slave_TX 		0
+#define I2S_Slave_RX 	 	1
+#define I2S_Master_TX    	2
+#define I2S_Master_RX 	 	3
 
-#define Philips_Standard 0;
-#define MSB_Justified_Standard 1;
-#define LSB_Justified_Standard 2;
-#define PCM_Standard 3;
+#define  Philips_Standard	 0
+#define  MSB_Justified		 1
+#define  LSB_Justified		 2
+#define  PCM_Standard		 3
 
-#define Slave_Transmit 0;
-#define Slave_Receive 1;
-#define Master_Transmit 2;
-#define Master_Receive 3;
+#define Frame_16bit	         0
+#define Frame_24bit	         1
+#define Frame_32bit	         2
+
+#define Channel_16bit        0
+#define Channel_32bit        1
+
+
 
 typedef struct I2S_Config
 {
@@ -41,11 +48,16 @@ typedef struct I2S_Config
 }I2S_Config;
 
 
+
+
+
 void I2C_Master_Init(I2S_Config I2S);
 
 void I2S_Master_Shut_Down(SPI_TypeDef *I2S);
 
-uint32_t I2S_Master_Receive(SPI_TypeDef *I2S);
+int32_t I2S_Master_Receive_Left_Channel(I2S_Config I2S);
+
+int32_t I2S_Master_Receive_Right_Channel(I2S_Config I2S);
 
 void I2S_Master_Transmit(SPI_TypeDef *I2S, uint16_t tx);
 
