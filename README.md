@@ -6,7 +6,7 @@
 
 ### To enable serial console:
 
-```
+```c
 Console_Init(9600); //PA9 -> TX and PA10 -> RX
 printConsole("Print what you want \n\r" );
 ```
