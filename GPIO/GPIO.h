@@ -52,78 +52,97 @@
 #define TIM2_CH3		1
 #define TIM2_CH4		1
 
-#define TIM3_CH1		  2
-#define TIM3_CH2		  2
-#define TIM3_CH3		  2
-#define TIM3_CH4		  2
+#define TIM3_CH1		2
+#define TIM3_CH2		2
+#define TIM3_CH3		2
+#define TIM3_CH4		2
 
-#define TIM4_CH1		  2
-#define TIM4_CH2		  2
-#define TIM4_CH3		  2
-#define TIM4_CH4		  2
+#define TIM4_CH1		2
+#define TIM4_CH2		2
+#define TIM4_CH3		2
+#define TIM4_CH4		2
 
-#define TIM5_CH1		  2
-#define TIM5_CH2		  2
-#define TIM5_CH3		  2
-#define TIM5_CH4		  2
+#define TIM5_CH1		2
+#define TIM5_CH2		2
+#define TIM5_CH3		2
+#define TIM5_CH4		2
 
-#define TIM9_CH1		  3
-#define TIM9_CH2		  3
-#define TIM9_CH3		  3
-#define TIM9_CH4		  3
+#define TIM9_CH1		3
+#define TIM9_CH2		3
+#define TIM9_CH3		3
+#define TIM9_CH4		3
 
-#define TIM10_CH1		  3
-#define TIM10_CH2		  3
-#define TIM10_CH3		  3
-#define TIM10_CH4		  3
+#define TIM10_CH1		3
+#define TIM10_CH2		3
+#define TIM10_CH3		3
+#define TIM10_CH4		3
 
-#define TIM11_CH1		  3
-#define TIM11_CH2		  3
-#define TIM11_CH3		  3
-#define TIM11_CH4		  3
+#define TIM11_CH1		3
+#define TIM11_CH2		3
+#define TIM11_CH3		3
+#define TIM11_CH4		3
 
-#define I2C1_SCL		  4
-#define I2C1_SDA		  4
-#define I2C2_SCL		  4
-#define I2C2_SDA		  4
-#define I2C3_SCL		  4
-#define I2C3_SDA		  9
+#define I2C1_SCL		4
+#define I2C1_SDA		4
+#define I2C2_SCL		4
+#define I2C2_SDA		4
+#define I2C3_SCL		4
+#define I2C3_SDA		9
 
-#define SPI1_CLK		  5
-#define SPI1_MOSI		  5
-#define SPI1_MISO		  5
+#define SPI1_CLK		5
+#define SPI1_MOSI		5
+#define SPI1_MISO		5
 
-#define SPI2_CLK		  5
-#define SPI2_MOSI		  5
-#define SPI2_MISO		  5
+#define SPI2_CLK		5
+#define SPI2_MOSI		5
+#define SPI2_MISO		5
 
-#define SPI3_CLK		  7
-#define SPI3_MOSI		  6
-#define SPI3_MISO		  6
+#define SPI3_CLK		7
+#define SPI3_MOSI		6
+#define SPI3_MISO		6
 
-#define SPI4_CLK		  6
-#define SPI4_MOSI		  5
-#define SPI4_MISO		  6
+#define SPI4_CLK		6
+#define SPI4_MOSI		5
+#define SPI4_MISO		6
 
-#define SPI5_CLK		  6
-#define SPI5_MOSI		  6
-#define SPI5_MISO		  6
+#define SPI5_CLK		6
+#define SPI5_MOSI		6
+#define SPI5_MISO		6
+
+#define I2S1_WS		5
+#define I2S1_CK		5
+#define I2S1_SD		5
+
+#define I2S2_WS		4
+#define I2S2_CK		7
+#define I2S2_SD		6
+
+#define I2S3_WS		6
+#define I2S3_CK		5
+#define I2S3_SD		5
+
+#define I2S4_WS		6
+#define I2S4_CK		6
+#define I2S4_SD		5
+
+#define I2S5_WS		6
+#define I2S5_CK		6
+#define I2S5_SD		6
 
 #define USART1_CLK		7
-#define USART1_TX		  7
-#define USART1_RX		  7
+#define USART1_TX		7
+#define USART1_RX		7
 #define USART1_CTS		7
 #define USART1_RTS		7
 
 #define USART2_CLK		7
-#define USART2_TX		  7
-#define USART2_RX		  7
+#define USART2_TX		7
+#define USART2_RX		7
 #define USART2_CTS		7
 #define USART2_RTS		7
 
-#define USART6_TX		  7
-#define USART6_RX		  7
-
+#define USART6_TX		7
+#define USART6_RX		7
 
 #define SDIO_CMD 		12
 #define SDIO_D1 		12
