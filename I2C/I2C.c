@@ -2,6 +2,7 @@
  * I2C.c
  *
  *  Created on: 08-Jul-2021
+ *  Updated on: 15-Sep-2021
  *      Author: Kunal
  */
 
@@ -14,35 +15,17 @@ int I2C_Master_Init(I2C_Config I2C)
 	if (I2C.I2C == I2C1)
 	{
 		RCC -> APB1ENR |= RCC_APB1ENR_I2C1EN;
-		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
-		//PB6 -> SCL
-		//PB7 -> SDA
-		GPIOB -> MODER = 0x00000000;
-		GPIOB -> MODER  |= 0xa280;
-		GPIOB -> OTYPER |= GPIO_OTYPER_OT6 | GPIO_OTYPER_OT7;
-//		GPIOB -> OTYPER |= 0xc0;
-		GPIOB -> OSPEEDR |= GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR7;
-//		GPIOB -> OSPEEDR |= 0xf0c0;
-		GPIOB -> PUPDR |= GPIO_PUPDR_PUPD6_0 | GPIO_PUPDR_PUPD7_0;
-//		GPIOB -> PUPDR |= 0x5100;
-		GPIOB -> AFR[0] |= (4 << 24) | (4 << 28);
-		GPIOB -> IDR = 0x0000;
-//		GPIOB -> IDR = 0xf7f8;
-
-
+		GPIO_Pin_Setup('B', 6, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2C1_SCL);
+		GPIO_Pin_Setup('B', 7, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2C1_SDA);
 
 	}
-	if (I2C.I2C == I2C2)
+	if (I2C.I2C == I2C2) //PB3 -> SDA	PB4 -> SDA
 	{
-		RCC -> APB1ENR |= RCC_APB1ENR_I2C2EN;
-		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
 		//PB3 -> SDA
 		//PB4 -> SDA
-		GPIOB -> MODER = 0x00000000;
-		GPIOB -> MODER  = 0xa280;
-		GPIOB -> OTYPER |= GPIO_OTYPER_OT3 | GPIO_OTYPER_OT4;
-		GPIOB -> OSPEEDR |= GPIO_OSPEEDER_OSPEEDR3 | GPIO_OSPEEDER_OSPEEDR4;
-		GPIOB -> AFR[0] |= (4 << 12) | (4 << 16);
+		RCC -> APB1ENR |= RCC_APB1ENR_I2C2EN;
+		GPIO_Pin_Setup('B', 3, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL_PULLUP, I2C2_SCL);
+		GPIO_Pin_Setup('B', 4, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL_PULLUP, I2C2_SDA);
 
 	}
 	if (I2C.I2C == I2C3)
@@ -51,14 +34,8 @@ int I2C_Master_Init(I2C_Config I2C)
 		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN;
 		//PA8 -> SDA
 		//PB10 -> SCL
-		GPIOA -> MODER   |= GPIO_MODER_MODE8 ;
-		GPIOA -> OTYPER  |= GPIO_OTYPER_OT8 ;
-		GPIOA -> OSPEEDR |= GPIO_OSPEEDER_OSPEEDR8 ;
-		GPIOA -> AFR[1] |= (4 << 0) ;
-		GPIOB -> MODER   |= GPIO_MODER_MODE10 ;
-		GPIOB -> OTYPER  |= GPIO_OTYPER_OT10 ;
-		GPIOB -> OSPEEDR |= GPIO_OSPEEDER_OSPEEDR10 ;
-		GPIOB -> AFR[1] |= (4 << 8) ;
+		GPIO_Pin_Setup('A', 8, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL_PULLUP, I2C3_SCL);
+		GPIO_Pin_Setup('B', 10, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL_PULLUP, I2C3_SDA);
 	}
 
 	if (I2C.mode)
@@ -68,10 +45,10 @@ int I2C_Master_Init(I2C_Config I2C)
 		I2C.I2C -> CR1 &= ~I2C_CR1_SWRST;
 
 		I2C.I2C -> OAR1 = 0x4000;
-		I2C.I2C -> CR2 = 0x30;
-		I2C.I2C -> CCR = 0x8028; // 0x8F0 cd5
+		I2C.I2C -> CR2 = 0x30; //48MHz
+		I2C.I2C -> CCR = 0x8028; //FS mode | 40
 		I2C.I2C -> TRISE = 0xf;
-//				I2C.I2C -> CR1 |= I2C_CR1_NOSTRETCH;
+		I2C.I2C -> CR1 |= I2C_CR1_NOSTRETCH;
 		I2C.I2C -> CR1 |= I2C_CR1_PE;
 	}
 	else
@@ -111,20 +88,14 @@ void I2C_Master_Send_Address(I2C_Config I2C, char address)
 
 }
 
-int I2C_Master_Receive_Address(I2C_Config I2C, char address)
+void I2C_Master_Receive_Address(I2C_Config I2C, char address)
 {
+//	I2C.I2C -> CR1 |= I2C_CR1_ACK;
 	I2C.I2C -> DR = (address << 1) | 0x01;
-	while((I2C.I2C->SR1 & I2C_SR1_ADDR))
-	{
-		if ((I2C.I2C->SR1 & I2C_SR1_AF) == 1)
-		{
-			//ERROR HANDLING
-			return 0;
-		}
-	}
+	while(!(I2C.I2C->SR1 & I2C_SR1_ADDR)){}
 	reg1 = I2C.I2C -> SR1;
 	reg2 = I2C.I2C -> SR2;
-return (int)(I2C.I2C->DR);
+
 }
 
 void I2C_Master_Send_Data(I2C_Config I2C, char data)
@@ -135,13 +106,14 @@ void I2C_Master_Send_Data(I2C_Config I2C, char data)
 
 char I2C_Master_Receive_Data(I2C_Config I2C)
 {
-	I2C.I2C -> CR1 |= I2C_CR1_POS;
+//	I2C.I2C -> CR1 |= I2C_CR1_POS;
 	I2C.I2C -> CR1 |= I2C_CR1_ACK;
-
-
 	char temp = 0;
-	while(!(I2C.I2C->SR1 & I2C_SR1_BTF));
-	I2C.I2C -> CR1 |= I2C_CR1_STOP;
+//	while(!(I2C.I2C->SR1 & I2C_SR1_BTF));
+//	I2C.I2C -> CR1 |= I2C_CR1_STOP;
+//	temp = I2C.I2C -> DR;
+//	I2C.I2C -> CR1 |= I2C_CR1_ACK;
+	while(!(I2C.I2C -> SR1 & I2C_SR1_RXNE)){}
 	temp = I2C.I2C -> DR;
 	I2C.I2C -> CR1 |= I2C_CR1_ACK;
 	return temp;
@@ -151,6 +123,7 @@ void I2C_Master_Stop(I2C_Config I2C)
 {
 //	while(!(I2C.I2C->SR1 & I2C_SR1_TXE));
 //	while(!(I2C.I2C->SR1 & I2C_SR1_BTF));
+
 	I2C.I2C -> CR1 |= I2C_CR1_STOP;
 }
 
