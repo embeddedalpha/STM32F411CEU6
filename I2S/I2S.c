@@ -2,7 +2,7 @@
  * I2S.c
  *
  *  Created on: 28-Jun-2021
- *  Updated on: 15-Sep-2021
+ *  Updated on: 21-Sep-2021
  *      Author: Kunal
  */
 
@@ -68,6 +68,7 @@ void I2S_Master_Init(I2S_Config I2S)
 		x = x + 1;
 		I2S.I2S ->I2SPR = x;
 	}
+	I2S.I2S -> I2SPR |= 1 << 8; //ODD
 
 	I2S.I2S -> I2SCFGR |= SPI_I2SCFGR_I2SE;
 }
@@ -93,16 +94,17 @@ int16_t I2S_Master_Receive_Right_Channel(I2S_Config I2S)
 
 void I2S_Master_Transmit_Left_Channel(I2S_Config I2S, int16_t data)
 {
+
+	while((I2S.I2S-> SR & SPI_SR_CHSIDE)){}
 	I2S.I2S -> DR = data;
-	while(!(I2S.I2S-> SR & SPI_SR_CHSIDE)){}
 
 
 }
 
 void I2S_Master_Transmit_Right_Channel(I2S_Config I2S, int16_t data)
 {
+	while(!(I2S.I2S-> SR & SPI_SR_CHSIDE)){}
 	I2S.I2S -> DR = data;
-	while((I2S.I2S-> SR & SPI_SR_CHSIDE)){}
 
 }
 
