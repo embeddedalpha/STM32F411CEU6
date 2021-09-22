@@ -26,3 +26,7 @@ int32_t data = I2S_Master_Receive_Left_Channel(INMP441);
 ```C
 int32_t data = I2S_Master_Receive_Right_Channel(INMP441);
 ```
+
+### Examples
+#### [I2S_Mono](https://github.com/embeddedalpha/STM32F411CEU6/blob/main/I2S/Example/I2S_Mono.c)  
+
