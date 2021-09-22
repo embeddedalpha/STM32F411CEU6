@@ -36,21 +36,21 @@ struct I2C_Config INA280;
 
 #define Power_Down_Mode_INA260	                            0 //SHUTDOWN MODE
 #define Shunt_Current_Mode_TRIGGERED_INA260	                1 //SHUNT CURRENT TRIGGERED
-#define Bus_Voltage_Mode_TRIGGERED_INA260	                  2 //BUS VOLTAGE TRIGGERED
+#define Bus_Voltage_Mode_TRIGGERED_INA260	                2 //BUS VOLTAGE TRIGGERED
 #define Shunt_Voltage_and_Current_TRIGGERED_Mode_INA260	    3 //SHUNT CURRENT AND BUS VOLTAGE TRIGGERED
 
-#define Shunt_Current_Continuous_Mode_INA260	              6 //SHUNT CURRENT
+#define Shunt_Current_Continuous_Mode_INA260	            6 //SHUNT CURRENT
 #define Bus_Voltage_Continuous_Mode_INA260	                7 //BUS VOLTAGE
-#define Shunt_Voltage_and_Current_Continuous_Mode_INA260	  8 //SHUNT CURRENT AND BUS VOLTAGE
+#define Shunt_Voltage_and_Current_Continuous_Mode_INA260	8 //SHUNT CURRENT AND BUS VOLTAGE
 
-#define Configuration_Register_INA260                       0x00 //READ-WRITE
-#define Current_Register_INA260                             0x01 //READ ONLY
-#define Bus_Voltage_Register_INA260                         0x02 //READ ONLY
-#define Power_Register_INA260                               0x03 //READ ONLY
-#define Mask_Enable_Register_INA260                         0x06 //READ-WRITE
-#define Alert_Limit_Register_INA260                         0x07 //READ-WRITE
-#define Manufacturer_ID_Register_INA260                     0xFE //READ ONLY
-#define Die_ID_Register_INA260                              0xFF //READ ONLY
+#define Configuration_Register_INA260 		0x00 //READ-WRITE
+#define Current_Register_INA260 			0x01 //READ ONLY
+#define Bus_Voltage_Register_INA260			0x02 //READ ONLY
+#define Power_Register_INA260	    		0x03 //READ ONLY
+#define Mask_Enable_Register_INA260 		0x06 //READ-WRITE
+#define Alert_Limit_Register_INA260 	    0x07 //READ-WRITE
+#define Manufacturer_ID_Register_INA260 	0xFE //READ ONLY
+#define Die_ID_Register_INA260 				0xFF //READ ONLY
 
 
 void INA260_Init(I2C_TypeDef *I2C);
@@ -65,6 +65,10 @@ float INA260_Get_Voltage(void);
 
 float INA260_Get_Power(void);
 
+float INA260_Get_Manufacturer_ID(void);
+
+float INA260_Get_Die_ID(void);
+
+
 
 #endif /* INA260_INA260_H_ */
-
