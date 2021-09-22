@@ -8,6 +8,9 @@
 
 #include "INA260.h"
 
+
+
+
 void INA260_Init(I2C_TypeDef *I2C)
 {
 
@@ -80,3 +83,33 @@ float INA260_Get_Power(void)
 	return power_dummy;
 }
 
+float INA260_Get_Die_ID(void)
+{
+	float die_dummy, decimal, tens;
+	char high_byte, low_byte;
+	I2C_Master_Start(INA280);
+	I2C_Master_Receive_Address(INA280, INA260_Address);
+	I2C_Master_Send_Data(INA280, Die_ID_Register_INA260);
+	high_byte = I2C_Master_Receive_Data(INA280);
+	low_byte = I2C_Master_Receive_Data(INA280);
+	I2C_Master_Stop(INA280);
+	decimal = ( 0x0F & low_byte ) * 0.001;
+	tens = (high_byte << 8) | (0xF0 & low_byte);
+	die_dummy = tens + decimal ;
+	return die_dummy;
+
+}
+
+float INA260_Get_Manufacturer_ID(void)
+{
+	float manu_dummy;
+	char high_byte, low_byte;
+	I2C_Master_Start(INA280);
+	I2C_Master_Receive_Address(INA280, INA260_Address);
+	I2C_Master_Send_Data(INA280, Manufacturer_ID_Register_INA260);
+	high_byte = I2C_Master_Receive_Data(INA280);
+	low_byte = I2C_Master_Receive_Data(INA280);
+	I2C_Master_Stop(INA280);
+	manu_dummy = ( ( high_byte << 8 ) | ( low_byte << 0) ) * 0.01;
+	return manu_dummy;
+}
