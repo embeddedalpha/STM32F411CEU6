@@ -1,116 +1,123 @@
 /*
- * I2S.c
+ * USART.c
  *
- *  Created on: 28-Jun-2021
- *  Updated on: 15-Sep-2021
+ *  Created on: 30-Aug-2021
  *      Author: Kunal
  */
 
+#include "USART.h"
 
-#include "I2S.h"
+//********************************	Asynchronous Communication	********************************
 
-
-void I2S_Master_Init(I2S_Config I2S)
+void UART_Init(Serial UART)
 {
-	int x;
-	I2S_Clock_Init();
-	if (I2S.I2S == I2S1)
+	if(UART.port == USART1)
 	{
-		RCC -> APB2ENR |= RCC_APB2ENR_SPI1EN;
-		GPIO_Pin_Setup('A', 4, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_WS);
-		GPIO_Pin_Setup('A', 5, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_CK);
-		GPIO_Pin_Setup('A', 7, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_SD);
+		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+		RCC -> APB2ENR |= RCC_APB2ENR_USART1EN;
+		GPIOA -> MODER   |= (2 << 18) | (2 << 20);	//9 -> tx	10 -> rx
+		GPIOA -> OTYPER  |= (0 << 9)  | (0 << 10) ;
+		GPIOA -> OSPEEDR |= (3 << 9)  | (3 << 10);
+		GPIOA -> PUPDR   |= (0 << 18) | (0 << 20);
+		GPIOA -> AFR[1]  |= (7 << 4)  | (5 << 8);
+		if(UART.hardware_control == 1)
+		{
+			GPIOA -> MODER   |= (2 << 22)  | (2 << 24);	//11 -> CTS 12->RTS
+			GPIOA -> OTYPER  |= (0 << 12)  | (0 << 11) ;
+			GPIOA -> OSPEEDR |= (3 << 12)  | (3 << 11);
+			GPIOA -> PUPDR   |= (0 << 22)  | (0 << 24);
+			GPIOA -> AFR[1]  |= (7 << 12)  | (5 << 16);
+		}
 
 	}
-	if(I2S.I2S == I2S2)	//CK -> PB10 	//WS -> PB12 	//SD -> PB15
+	if(UART.port == USART2)
 	{
-		RCC -> APB1ENR |= RCC_APB1ENR_SPI2EN;
-        GPIO_Pin_Setup('B', 10, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S2_CK);
-		GPIO_Pin_Setup('B', 12, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S2_WS);
-		GPIO_Pin_Setup('B', 15, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S2_SD);
+		RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+		RCC -> APB1ENR |= RCC_APB1ENR_USART2EN;
+		GPIOA -> MODER   |= (2 << 4)  | (2 << 6);	//2 -> tx	3 -> rx
+		GPIOA -> OTYPER  |= (0 << 2)  | (0 << 3) ;
+		GPIOA -> OSPEEDR |= (3 << 4)  | (3 << 6);
+		GPIOA -> PUPDR   |= (0 << 4)  | (0 << 6);
+		GPIOA -> AFR[0]  |= (7 << 8)  | (5 << 12);
+		if(UART.hardware_control == 1)
+		{
+			GPIOA -> MODER   |= (2 << 0)  | (2 << 2);	//0 -> CTS 1->RTS
+			GPIOA -> OTYPER  |= (0 << 0)  | (0 << 1) ;
+			GPIOA -> OSPEEDR |= (3 << 0)  | (3 << 2);
+			GPIOA -> PUPDR   |= (0 << 0)  | (0 << 2);
+			GPIOA -> AFR[1]  |= (7 << 0)  | (5 << 4);
+		}
 	}
-	if(I2S.I2S == I2S3)	//CK -> PB12 	//WS -> PA15 	//SD -> PB5
+
+	UART.port ->CR1 |= USART_CR1_UE;
+	UART.port ->BRR = (int)(SystemCoreClock / (16 * UART.baudrate)) << 4;
+
+	if (UART.TX_DMA == 1) UART.port -> CR3 |= USART_CR3_DMAT;
+	else                  UART.port -> CR3 &= ~USART_CR3_DMAT;
+	if (UART.RX_DMA == 1) UART.port -> CR3 |= USART_CR3_DMAR;
+	else                  UART.port -> CR3 &= ~USART_CR3_DMAR;
+
+	if(UART.mode == Half_Duplex) UART.port -> CR3 |= USART_CR3_HDSEL;
+	if(UART.mode == Full_Duplex) UART.port -> CR3 &= ~USART_CR3_HDSEL;
+
+	if(UART.hardware_control == 1)
 	{
-		RCC -> APB1ENR |= RCC_APB1ENR_SPI3EN;
-		GPIO_Pin_Setup('B', 12, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S3_CK);
-		GPIO_Pin_Setup('A', 15, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S3_WS);
-		GPIO_Pin_Setup('B', 5, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S3_SD);
+		UART.port -> CR3 |= USART_CR3_CTSE | USART_CR3_RTSE;
 	}
-	if(I2S.I2S == I2S4)	//CK -> PB13 	//WS -> PB12 	//SD -> PA1
+	else
 	{
-		RCC -> APB2ENR |= RCC_APB2ENR_SPI4EN;
-		GPIO_Pin_Setup('A', 1,  ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S4_SD);
-		GPIO_Pin_Setup('B', 12, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S4_WS);
-		GPIO_Pin_Setup('B', 13, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S4_CK);
+		UART.port -> CR3 &= ~(USART_CR3_CTSE | USART_CR3_RTSE);
 	}
-	if(I2S.I2S == I2S5)	//CK -> PB0 	//WS -> PB1 	//SD -> PA10
-	{
-		RCC -> APB2ENR |= RCC_APB2ENR_SPI5EN;
-		GPIO_Pin_Setup('B', 0, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S5_CK);
-		GPIO_Pin_Setup('B', 1, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S5_WS);
-		GPIO_Pin_Setup('A', 10, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S5_SD);
-	}
-	I2S.I2S -> I2SCFGR |= (SPI_I2SCFGR_I2SMOD |
-			               (I2S.mode << 8) |
-						   (I2S.standard << 4) |
-						   (I2S.data_length << 1) |
-						   (I2S.channel_length << 0));
 
-	if (I2S.channel_length == Channel_16bit)
-	{
-		x =(int)round(((172000000)/((16 * 2) * (2 * I2S.audio_frequency))));
-		x = x + 1;
-		I2S.I2S ->I2SPR = x;
-	}
-	else if (I2S.channel_length == Channel_32bit)
-	{
-		x =(int)(((172000000)/((32 * 2) * (2 * I2S.audio_frequency))));
-		x = x + 1;
-		I2S.I2S ->I2SPR = x;
-	}
-	I2S.I2S -> I2SPR |= 1 << 8; //ODD
-
-	if( I2S.RX_Interrupt == 1 ) I2S.I2S -> CR2 |= SPI_CR2_RXNEIE;
-	else I2S.I2S -> CR2 &= ~SPI_CR2_RXNEIE;
-
-	if( I2S.TX_Interrupt == 1 ) I2S.I2S -> CR2 |= SPI_CR2_TXEIE;
-	else I2S.I2S -> CR2 &= ~SPI_CR2_TXEIE;
-
-	I2S.I2S -> I2SCFGR |= SPI_I2SCFGR_I2SE;
-}
-
-void I2S_Master_Shut_Down(I2S_Config I2S)
-{
-	I2S.I2S ->I2SCFGR &= ~SPI_I2SCFGR_I2SMOD;
-}
-
-int16_t I2S_Master_Receive_Left_Channel(I2S_Config I2S)
-{
-	while(!(I2S.I2S-> SR & SPI_SR_CHSIDE)){}
-	return  (I2S.I2S -> DR);
-
-}
-
-int16_t I2S_Master_Receive_Right_Channel(I2S_Config I2S)
-{
-	while((I2S.I2S-> SR & SPI_SR_CHSIDE)){}
-	return  (I2S.I2S -> DR);
+	UART.port ->CR1 |= USART_CR1_TE | USART_CR1_RE  ;
 }
 
 
-void I2S_Master_Transmit_Left_Channel(I2S_Config I2S, int16_t data)
+void UART_Transmit_Byte(Serial UART, char data)
 {
-
-	while((I2S.I2S-> SR & SPI_SR_CHSIDE)){}
-	I2S.I2S -> DR = data;
-
-
+	USART1 ->DR = data;
+	USART1 -> CR1 |= USART_CR1_SBK;
+	while((USART1->SR & USART_SR_TC) == 0);
 }
 
-void I2S_Master_Transmit_Right_Channel(I2S_Config I2S, int16_t data)
-{
-	while(!(I2S.I2S-> SR & SPI_SR_CHSIDE)){}
-	I2S.I2S -> DR = data;
 
+void UART_Transmit_Buffer(Serial UART, char *data)
+{
+	int x = strlen(data);
+	for(int n = 0; n < x; n++)
+	{
+		USART1 ->DR = (data[n]);
+		USART1 -> CR1 |= USART_CR1_SBK;
+		while((USART1->SR & USART_SR_TC) == 0);
+	}
 }
 
+
+char UART_Receive_Byte(Serial UART)
+{
+	while((UART.port ->SR & USART_SR_RXNE) == 0);
+	return UART.port-> DR;
+}
+
+
+char USART_Transceive(Serial UART, char byte)
+{
+	USART1 ->DR = (byte);
+	USART1 -> CR1 |= USART_CR1_SBK;
+	while((USART1->SR & USART_SR_TC) == 0);
+	while((UART.port ->SR & USART_SR_RXNE) == 0);
+	return UART.port-> DR;
+}
+
+
+//********************************	Synchronous Communication	********************************
+
+void USART_Init(Serial UART);
+
+void UASRT_Transmit_Byte(Serial UART, char data);
+
+void USART_Transmit_Buffer(Serial UART, char *data);
+
+char USART_Receive_Byte(Serial UART);
+
+char USART_Transceive(Serial UART, char byte);
