@@ -2,7 +2,7 @@
  * I2S.c
  *
  *  Created on: 28-Jun-2021
- *  Updated on: 21-Sep-2021
+ *  Updated on: 15-Sep-2021
  *      Author: Kunal
  */
 
@@ -69,6 +69,12 @@ void I2S_Master_Init(I2S_Config I2S)
 		I2S.I2S ->I2SPR = x;
 	}
 	I2S.I2S -> I2SPR |= 1 << 8; //ODD
+
+	if( I2S.RX_Interrupt == 1 ) I2S.I2S -> CR2 |= SPI_CR2_RXNEIE;
+	else I2S.I2S -> CR2 &= ~SPI_CR2_RXNEIE;
+
+	if( I2S.TX_Interrupt == 1 ) I2S.I2S -> CR2 |= SPI_CR2_TXEIE;
+	else I2S.I2S -> CR2 &= ~SPI_CR2_TXEIE;
 
 	I2S.I2S -> I2SCFGR |= SPI_I2SCFGR_I2SE;
 }
