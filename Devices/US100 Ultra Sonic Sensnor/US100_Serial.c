@@ -2,7 +2,7 @@
 
 
 
-void US100_Init()
+void US100_Init(Serial US)
 {
   US1.port = USART1;
   US1.baudrate = 9600;
