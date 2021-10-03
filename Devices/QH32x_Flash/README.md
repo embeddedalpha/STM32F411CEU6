@@ -6,7 +6,7 @@
 ![image](https://user-images.githubusercontent.com/38166489/135762626-63380dc0-3746-4f8d-a67c-26132dd45fa6.png)
 
 #### Functions avaliable in the driver to the user
-```
+```C
 bool QH32x_Init(SPI_TypeDef *SPI);
 void QH32x_Reset();
 void QH32x_Flash_Write_Enable();
