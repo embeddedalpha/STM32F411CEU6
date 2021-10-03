@@ -1,73 +1,56 @@
 /*
  * SPI.h
  *
- *  Created on: 20-Mar-2021
+ *  Created on: 18-Jul-2021
+ *  Updated on: 03-Oct-2021
  *      Author: Kunal
  */
 
 #ifndef SPI_SPI_H_
 #define SPI_SPI_H_
 
-#include "stm32f411xe.h"
-#include "stm32f4xx.h"
-#include "stdbool.h"
+#include "main.h"
 #include "GPIO/GPIO.h"
+
+#define Full_Duplex_Master    0
+#define Half_Duplex_Master_TX 1
+#define Half_Duplex_Master_RX 2
+#define Full_Duplex_Slave     3
+#define Half_Duplex_Slave_TX  4
+#define Half_Duplex_Slave_RX  5
+
+#define SPI_Frame_8Bit 0
+#define SPI_Frame_16Bit 1
+
+#define SPI_Master 1
+#define SPI_Slave 0
+
+
 
 
 typedef struct SPI_Config
 {
 	SPI_TypeDef *SPI;
+	uint8_t type;
 	bool mode;
-	bool onlyTXorRX;
-	bool frame_format;
-	uint8_t clock_speed;
-	uint8_t lsb_or_msb;
-	bool crc;
-	bool interrupts;
-	bool tx_int;
-	bool err_int;
-	bool rx_int;
-	bool clock_phase;
-	bool clock_polarity;
-	bool txDMA;
-	bool rxDMA;
-
+	int frequency;
+	bool phase;
+	bool polarity;
+	bool LSB_MSB;
+	bool CRC_Enable;
+	bool DMA_TX;
+	bool DMA_RX;
+	bool Frame;
 }SPI_Config;
 
-
-void SPI_Master_Init(SPI_Config SPI);
-
-void SPI_Master_TX(SPI_Config SPI, uint32_t data);
-
-uint32_t SPI_Master_RX(SPI_Config SPI);
-
-void SPI_Slave_Init(SPI_Config SPI);
-
-void SPI_Slave_TX(SPI_Config SPI, uint32_t data);
-
-uint32_t SPI_Slave_RX(SPI_Config SPI);
-
-void SPI_Disable(SPI_Config SPI);
+void SPI_Init(SPI_Config SPI);
+void SPI_CSS_Init(SPI_Config SPI);
+void SPI_CSS_High(SPI_Config SPI);
+void SPI_CSS_Low(SPI_Config SPI);
+void SPI_Send_Data(SPI_Config SPI,int16_t data);
+int16_t SPI_Receive_Data(SPI_Config SPI);
 
 
-void SPI1_CSS_HIGH(void);
 
-void SPI1_CSS_LOW(void);
-
-void SPI2_CSS_HIGH(void);
-
-void SPI2_CSS_LOW(void);
-
-void SPI3_CSS_HIGH(void);
-
-void SPI3_CSS_LOW(void);
-
-void SPI4_CSS_HIGH(void);
-
-void SPI4_CSS_LOW(void);
-
-void SPI5_CSS_HIGH(void);
-
-void SPI5_CSS_LOW(void);
 
 #endif /* SPI_SPI_H_ */
