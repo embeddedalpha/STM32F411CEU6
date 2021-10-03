@@ -2,6 +2,7 @@
  * SPI.c
  *
  *  Created on: 18-Jul-2021
+ *  Updated on: 03-Oct-2021
  *      Author: Kunal
  */
 
@@ -136,14 +137,36 @@ void SPI_CSS_Low(SPI_Config SPI)
 
 void SPI_Send_Data(SPI_Config SPI,int16_t data)
 {
-	while(!(SPI.SPI -> SR & SPI_SR_TXE));
+
+	while(!(SPI.SPI->SR & SPI_SR_TXE));
 	SPI.SPI -> DR = data;
+	while(!(SPI.SPI->SR & SPI_SR_TXE));
+	while((SPI.SPI->SR & SPI_SR_BSY));
 }
 
 int16_t SPI_Receive_Data(SPI_Config SPI)
 {
-	int16_t data;
-	while(!(SPI.SPI -> SR & SPI_SR_RXNE));
-	data = SPI.SPI -> DR;
+	uint16_t data;
+	uint8_t  data1,data2;
+	if(SPI.Frame == SPI_Frame_8Bit)
+	{
+		SPI_Send_Data(SPI, 0xAA); //Send dummy byte
+		while((SPI.SPI->SR & SPI_SR_BSY));
+		while((SPI.SPI -> SR & SPI_SR_RXNE))
+		data = SPI.SPI -> DR;
+	}
+	if(SPI.Frame == SPI_Frame_16Bit)
+	{
+		SPI_Send_Data(SPI, 0xAA); //Send dummy byte
+		while((SPI.SPI->SR & SPI_SR_BSY));
+		while((SPI.SPI -> SR & SPI_SR_RXNE))
+		data1 = SPI.SPI -> DR;
+		SPI_Send_Data(SPI, 0xAA); //Send dummy byte
+		while((SPI.SPI->SR & SPI_SR_BSY));
+		while((SPI.SPI -> SR & SPI_SR_RXNE))
+		data2 = SPI.SPI -> DR;
+		data = data1 << 8 | data2;
+	}
 	return data;
+
 }
