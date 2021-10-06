@@ -31,7 +31,10 @@ void QH32x_Read_Flash_Buffer(uint32_t addr, int len, uint8_t *data);
 
 
 void QH32x_Erase_Data(uint32_t start_address, uint32_t end_address);
-
+void QH32x_Read_JEDEC_ID(void);
+uint64_t QH32x_Read_Unique_ID(void);
+uint8_t SF_Read_Manufacturing_ID(void);
+uint8_t QH32x_Read_Device_ID(void);
 
 
 
