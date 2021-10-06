@@ -256,3 +256,72 @@ void QH32x_Erase_Data(uint32_t start_address, uint32_t end_address)
 		}
 	}
 }
+
+
+void QH32x_Read_JEDEC_ID(void)
+{
+	uint8_t x[4];
+	SPI_CSS_Low(QH32);
+	SPI_Send_Data(QH32, JEDEC_ID);
+	x[0] = SPI_Receive_Data(QH32);
+	x[1] = SPI_Receive_Data(QH32);
+	x[2] = SPI_Receive_Data(QH32);
+	x[3] = SPI_Receive_Data(QH32);
+	SPI_CSS_High(QH32);
+}
+
+
+uint64_t QH32x_Read_Unique_ID(void) //works
+{
+	uint8_t x[8];
+	uint64_t id;
+	SPI_CSS_Low(QH32);
+	SPI_Send_Data(QH32, Read_Unique_ID);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xff);
+	x[0] = SPI_Receive_Data(QH32); //0-7
+	x[1] = SPI_Receive_Data(QH32); //8-15
+	x[2] = SPI_Receive_Data(QH32); //15-
+	x[3] = SPI_Receive_Data(QH32);
+	x[4] = SPI_Receive_Data(QH32);
+	x[5] = SPI_Receive_Data(QH32);
+	x[6] = SPI_Receive_Data(QH32);
+	x[7] = SPI_Receive_Data(QH32);
+	SPI_CSS_High(QH32);
+	id =    (x[0] << 56) | (x[1] << 48) |
+			(x[2] << 40) | (x[3] << 32) |
+			(x[4] << 24) | (x[5] << 16) |
+			(x[6] << 8)  | (x[7] << 0) ;
+return id;
+}
+
+
+uint8_t QH32x_Read_Manufacturing_ID(void) //works
+{
+	uint8_t manu_id;
+	SPI_CSS_Low(QH32);
+	SPI_Send_Data(QH32, Manufacturer_Device_ID);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0x00);
+//	SPI_Send_Data(QH32, 0xff);
+	manu_id = SPI_Receive_Data(QH32); //0-7
+	SPI_CSS_High(QH32);
+	return manu_id ;
+}
+
+
+uint8_t QH32x_Read_Device_ID(void) //works
+{
+	uint8_t device_id;
+	SPI_CSS_Low(QH32);
+	SPI_Send_Data(QH32, Manufacturer_Device_ID);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xff);
+	SPI_Send_Data(QH32, 0xFF);
+	device_id = SPI_Receive_Data(QH32); //0-7
+	SPI_CSS_High(QH32);
+	return device_id ;
+}
