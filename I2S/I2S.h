@@ -35,7 +35,7 @@
 #define Channel_16bit        0
 #define Channel_32bit        1
 
-
+#define I2S_DMA 0
 
 typedef struct I2S_Config
 {
@@ -48,11 +48,19 @@ typedef struct I2S_Config
 	bool RX_Interrupt;
 	bool TX_Interrupt;
 
+	bool RX_DMA;
+	bool TX_DMA;
+	uint32_t * data;
+	int length;
+
+
 }I2S_Config;
 
 
 
 void I2S_Master_Init(I2S_Config I2S);
+
+void I2S_Master_Start(I2S_Config I2S);
 
 void I2S_Master_Shut_Down(I2S_Config I2S);
 
