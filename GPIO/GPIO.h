@@ -153,6 +153,7 @@
 #define I2C3_SCL		4
 #define I2C3_SDA		9
 
+#define SPI1_NSS		5
 #define SPI1_CLK		5
 #define SPI1_MOSI		5
 #define SPI1_MISO		5
@@ -218,6 +219,12 @@
 #define SDIO_D7 		12
 
 
+#define RISING_EDGE				0
+#define FALLING_EDGE			1
+#define RISING_FALLING_EDGE		2
+
 void GPIO_Pin_Setup(char Port, uint8_t pin, uint8_t function, uint8_t alternate_function);
+void GPIO_Interrupt_Setup(int pin, int edge_select);
+
 
 #endif /* GPIO_GPIO_H_ */
