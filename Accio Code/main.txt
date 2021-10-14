@@ -3,7 +3,7 @@
 #include "SPI/SPI.h"
 #include "ST7789_LCD/ST7789_LCD.h"
 
-bool button1, button2, button3, button4, LMS1, LMS2;
+bool button1, button2, button3, button4, LMS1, LMS2, relay1, relay2;
 double temp1;
 
 
@@ -18,6 +18,12 @@ bool Read_Limit_Swich_2(void);
 void ADC_Init(void);
 uint16_t ADC_Read(void);
 float Read_Temp(void);
+void Relay_1_Init();
+void Relay_1_Activate(void);
+void Relay_1_Deactivate(void);
+void Relay_2_Init();
+void Relay_2_Activate(void);
+void Relay_2_Deactivate(void);
 
 int main()
 {
@@ -164,12 +170,36 @@ float Read_Temp(void)
 	return temp1;
 }
 
+void Relay_1_Init()
+{
+	GPIO_Pin_Setup('A', 0, GENERAL_PURPOSE_OUTPUT_PUSHPULL, NONE);
+}
 
+void Relay_2_Init()
+{
+	GPIO_Pin_Setup('A', 1, GENERAL_PURPOSE_OUTPUT_PUSHPULL, NONE);
+}
 
+void Relay_1_Activate(void)
+{
+	relay1 = 1;
+	GPIOA -> BSRR |= GPIO_BSRR_BS0;
+}
+void Relay_1_Deactivate(void)
+{
+	relay1 = 0;
+	GPIOA -> BSRR |= GPIO_BSRR_BR0;
+}
 
-
-
-
-
+void Relay_2_Activate(void)
+{
+	relay2 = 1;
+	GPIOA -> BSRR |= GPIO_BSRR_BS1;
+}
+void Relay_2_Deactivate(void)
+{
+	relay2 = 0;
+	GPIOA -> BSRR |= GPIO_BSRR_BR1;
+}
 
 
