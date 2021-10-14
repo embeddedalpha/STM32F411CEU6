@@ -1,0 +1,175 @@
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "SPI/SPI.h"
+#include "ST7789_LCD/ST7789_LCD.h"
+
+bool button1, button2, button3, button4, LMS1, LMS2;
+double temp1;
+
+
+void EXTI0_IRQHandler(void);
+void EXTI1_IRQHandler(void);
+void EXTI2_IRQHandler(void);
+void EXTI3_IRQHandler(void);
+void Limit_Switch_1_Init(void);
+void Limit_Switch_2_Init(void);
+bool Read_Limit_Swich_1(void);
+bool Read_Limit_Swich_2(void);
+void ADC_Init(void);
+uint16_t ADC_Read(void);
+float Read_Temp(void);
+
+int main()
+{
+
+MCU_Clock_Setup();
+Delay_Config();
+Console_Init(9600);
+
+GPIO_Pin_Setup('a', 0, INPUT_PULLDW, NONE);
+GPIO_Interrupt_Setup(0, RISING_EDGE);
+GPIO_Pin_Setup('a', 1, INPUT_PULLDW, NONE);
+GPIO_Interrupt_Setup(0, RISING_EDGE);
+GPIO_Pin_Setup('a', 2, INPUT_PULLDW, NONE);
+GPIO_Interrupt_Setup(0, RISING_EDGE);
+GPIO_Pin_Setup('a', 3, INPUT_PULLDW, NONE);
+GPIO_Interrupt_Setup(0, RISING_EDGE);
+
+
+
+
+NVIC_SetPriority(EXTI0_IRQn,0);
+NVIC_EnableIRQ(EXTI0_IRQn);
+NVIC_SetPriority(EXTI1_IRQn,0);
+NVIC_EnableIRQ(EXTI1_IRQn);
+NVIC_SetPriority(EXTI2_IRQn,0);
+NVIC_EnableIRQ(EXTI2_IRQn);
+NVIC_SetPriority(EXTI3_IRQn,0);
+NVIC_EnableIRQ(EXTI3_IRQn);
+
+
+
+
+
+
+
+	while(1)
+	{
+
+		printConsole("{\r\n");
+		printConsole("Button 1: %d",button1);
+		printConsole("Button 2: %d",button2);
+		printConsole("Button 3: %d",button3);
+		printConsole("Button 4: %d",button4);
+		printConsole("Limit Switch 1: %d",Read_Limit_Swich_1());
+		printConsole("Limit Switch 2: %d",Read_Limit_Swich_2());
+		printConsole("CPU Temperature: %f",Read_Temp());
+		printConsole("}\r\n");
+		button1 = 0;
+		button2 = 0;
+		button3 = 0;
+		button4 = 0;
+		LMS1 = 0;
+		LMS2 = 0;
+		temp1 = 0;
+
+
+	}
+}
+
+
+
+
+
+
+
+void EXTI0_IRQHandler(void)
+{
+	button1 = 1;
+	EXTI ->PR |= 1 << 0;
+
+}
+
+void EXTI1_IRQHandler(void)
+{
+	button2 = 1;
+	EXTI ->PR |= 1 << 1;
+
+}
+
+void EXTI2_IRQHandler(void)
+{
+	button3 = 1;
+	EXTI ->PR |= 1 << 2;
+
+}
+
+void EXTI3_IRQHandler(void)
+{
+	button4 = 1;
+	EXTI ->PR |= 1 << 3;
+
+}
+
+void Limit_Switch_1_Init(void)
+{
+	GPIO_Pin_Setup('a', 4, INPUT_PULLUP, NONE);
+}
+
+void Limit_Switch_2_Init(void)
+{
+	GPIO_Pin_Setup('a', 5, INPUT_PULLUP, NONE);
+}
+
+
+bool Read_Limit_Swich_1(void)
+{
+	LMS1 = GPIOA ->IDR & GPIO_IDR_ID4;
+	return LMS1;
+}
+
+bool Read_Limit_Swich_2(void)
+{
+	LMS2 = GPIOA ->IDR & GPIO_IDR_ID5;
+	return LMS2;
+}
+
+void ADC_Init(void)
+{
+	GPIO_Pin_Setup('A', 0, ANALOG_INPUT, NONE);
+
+	ADC1 -> CR2 |= ADC_CR2_ADON;
+	ADC1 -> CR2 |= ADC_CR2_CONT;
+	ADC1 -> CR2 &= ~ADC_CR2_ALIGN;
+	ADC -> CR2 |= ADC_CR2_RSTCAL;
+    while((ADC1 ->CR2 & ADC_CR2_RSTCAL));
+    ADC1 ->CR2 |= ADC_CR2_CAL;
+    while(!(ADC1 ->CR2 & ADC_CR2_CAL));
+    ADC1 ->SQR1 |= 0<< 20;
+    ADC1 ->SMPR2 |=  0 << (4*0);
+    ADC1 -> SQR3 |= 1 << (5*0);
+    ADC1 -> CR2 |= ADC_CR2_ADON;
+
+}
+
+
+uint16_t ADC_Read(void)
+{
+	return ADC1 ->DR;
+}
+
+float Read_Temp(void)
+{
+	temp1 = ADC_Read();
+	return temp1;
+}
+
+
+
+
+
+
+
+
+
+
