@@ -338,7 +338,6 @@ uint8_t W25Qx_Read_Device_ID(void) //works
 
 void W25Qx_Save_String(uint32_t addr,char *msg, ...)
 {
-
 char buff[10000];
 	va_list args;
 	va_start(args, msg);
@@ -348,6 +347,4 @@ char buff[10000];
 	{
 		W25Qx_Write_Flash(addr+i, buff[i]);
 	}
-
-//	#endif
 }
