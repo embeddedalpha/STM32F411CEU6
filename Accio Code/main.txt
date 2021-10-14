@@ -2,6 +2,7 @@
 #include "GPIO/GPIO.h"
 #include "SPI/SPI.h"
 #include "ST7789_LCD/ST7789_LCD.h"
+#include "W25Qx_Flash/W25Qx_Flash.h"
 
 bool button1, button2, button3, button4, LMS1, LMS2, relay1, relay2;
 double temp1;
@@ -31,6 +32,7 @@ int main()
 MCU_Clock_Setup();
 Delay_Config();
 Console_Init(9600);
+W25Qx_Init(SPI1);
 
 GPIO_Pin_Setup('a', 0, INPUT_PULLDW, NONE);
 GPIO_Interrupt_Setup(0, RISING_EDGE);
