@@ -1,0 +1,58 @@
+	int led[MAX_LEDs][44];
+	uint8_t red = 0xff;
+	uint8_t green = 0x00;
+	uint8_t blue = 0x00;
+
+	uint32_t color;
+	color = red << 16 | green << 8 | blue;
+    for(int i = 23; i >=0; i--)
+    {
+        if(color & (1 << i))
+        {
+            led[0][i] = 24;
+        }
+        else
+        {
+            led[0][i] = 57;
+        }
+    }
+    for(int i = 44; i >= 24; i--)
+    {
+    	led[0][i] = 0;
+    }
+
+
+	GPIO_Pin_Setup('A', 8, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, TIM1_CH1);
+
+	RCC ->APB2ENR |= RCC_APB2ENR_TIM1EN;
+	TIM1-> PSC = 0;
+	 TIM1 -> ARR = 120;
+	 TIM1 -> CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2|TIM_CCMR1_OC1PE;
+	 TIM1 -> BDTR |= TIM_BDTR_MOE | TIM_BDTR_BKP;
+	 TIM1 -> CCER |= TIM_CCER_CC1E;
+//	 TIM1 -> CR1 |= TIM_CR1_ARPE;
+	 TIM1 -> EGR |= TIM_EGR_UG;
+	 TIM1 -> DIER |= 1 << 9 ;
+	 TIM1 ->DMAR = 0x81;
+
+
+
+
+	RCC ->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+	DMA2_Stream1 ->CR |= 1 << 6;
+	DMA2_Stream1 -> CR |= 1 << 10;
+	DMA2_Stream1 -> CR |= 1 << 11 | 1 << 8;
+	DMA2_Stream1 -> CR |= 1 << 13;
+	DMA2_Stream1 -> CR |= 1 << 26 | 1 << 27;
+//	DMA2_Stream1 -> CR |= 0xFF << 1;
+
+	DMA2_Stream1 -> M0AR = (uint32_t)&led;
+	DMA2_Stream1 -> PAR = (uint32_t)&TIM1->CCR1;
+	DMA2_Stream1 -> NDTR = 44;
+
+
+
+	 TIM1 -> CR1 |= TIM_CR1_CEN;
+	DMA2_Stream1 -> CR |= 1 << 0;
+
+
