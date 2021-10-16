@@ -1,0 +1,61 @@
+	int16_t data[1000];
+	MCU_Clock_Setup();
+	I2S_Clock_Init();
+	Console_Init(460800);
+
+RCC -> AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+RCC -> APB2ENR |= RCC_APB2ENR_USART1EN | RCC_APB2ENR_SPI1EN;
+
+//GPIO INIT
+//GPIO_Pin_Setup('A', 9, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, USART1_TX);
+GPIO_Pin_Setup('A', 4, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_WS);
+GPIO_Pin_Setup('A', 5, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_CK);
+GPIO_Pin_Setup('A', 7, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_SD);
+
+SPI1 -> I2SCFGR |= (SPI_I2SCFGR_I2SMOD | SPI_I2SCFGR_I2SCFG);
+SPI1 -> I2SCFGR &= ~(SPI_I2SCFGR_I2SSTD | SPI_I2SCFGR_CKPOL | SPI_I2SCFGR_DATLEN | SPI_I2SCFGR_CHLEN);
+SPI1 -> I2SPR = 56;
+SPI1 -> I2SPR |= SPI_I2SPR_ODD;
+SPI1 -> I2SPR &= ~SPI_I2SPR_MCKOE;
+//DMA from peripheral to memory
+DMA2_Stream0 -> CR |= DMA_SxCR_CHSEL_0 | DMA_SxCR_CHSEL_1                               //CHANNEL = 3
+		           |  DMA_SxCR_PL  						                                //PRIORITY LEVEL = VERY HIGH
+				   |  DMA_SxCR_MSIZE_1 					                                //MEMORY SIZE = 16 BITS
+				   |  DMA_SxCR_PSIZE_1 					                                //PERIPHERAL SIZE = 16 BITS
+				   |  DMA_SxCR_MINC    					                                //MEMORY INCREMENT MODE
+				   |  DMA_SxCR_CIRC    					                                //CIRCULAR MODE
+				   |  DMA_SxCR_TCIE | DMA_SxCR_HTIE | DMA_SxCR_TEIE | DMA_SxCR_DMEIE    //INTERRUPT ENABLE
+				   ;
+DMA2_Stream0 -> CR &= ~DMA_SxCR_DIR;
+DMA2_Stream0 -> NDTR = 100;
+DMA2_Stream0 -> PAR = (uint32_t)&(SPI1 -> DR);
+DMA2_Stream0 -> M0AR = (uint32_t)&data;
+
+
+//uint32_t baudrate = 115200;
+//USART1 ->CR1 |= USART_CR1_UE;
+USART1 -> CR3 |= USART_CR3_DMAT;
+//USART1->BRR = (int)(SystemCoreClock / (16 * baudrate)) << 4;
+//USART1 ->CR1 |= USART_CR1_TE;
+
+//DMA from memory to peripheral
+DMA2_Stream7 -> CR |= DMA_SxCR_CHSEL_2                                                  //CHANNEL = 3
+		           |  DMA_SxCR_PL  						                                //PRIORITY LEVEL = VERY HIGH
+				   |  DMA_SxCR_MSIZE_1 					                                //MEMORY SIZE = 16 BITS
+				   |  DMA_SxCR_PSIZE_1 					                                //PERIPHERAL SIZE = 16 BITS
+				   |  DMA_SxCR_MINC    					                                //MEMORY INCREMENT MODE
+				   |  DMA_SxCR_CIRC    					                                //CIRCULAR MODE
+				   |  DMA_SxCR_TCIE | DMA_SxCR_HTIE | DMA_SxCR_TEIE | DMA_SxCR_DMEIE    //INTERRUPT ENABLE
+				   ;
+DMA2_Stream7 -> CR |= DMA_SxCR_DIR_0;
+DMA2_Stream7 -> NDTR = 100;
+DMA2_Stream7 -> PAR = (uint32_t)&(USART1 -> DR);
+DMA2_Stream7 -> M0AR = (uint32_t)&data;
+
+
+DMA2_Stream0 -> CR |= DMA_SxCR_EN;
+DMA2_Stream7 -> CR |= DMA_SxCR_EN;
+USART1 ->CR1 |= USART_CR1_UE;
+SPI1 -> CR2 |= SPI_CR2_RXDMAEN;
+SPI1 -> I2SCFGR |= SPI_I2SCFGR_I2SE;
+
