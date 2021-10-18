@@ -1,5 +1,8 @@
 # RTC
 
+### RTC stands for Real Time Clock
+
+### Below are the defines and structs you need to set and get date and time
 
 ```C
 #define Time_Format_24Hour	0
@@ -45,6 +48,8 @@ typedef struct RTC_Time{
 
 ```
 
+### Following are the functions necessary for basic RTC function.
+
 ```C
 void RTC_Init(void);
 void RTC_Set_Time(RTC_Time *T, int time_format);
@@ -53,3 +58,5 @@ void RTC_Start(void);
 void RTC_Get_Time(RTC_Time *T);
 void RTC_Get_Date(RTC_Date *D);
 ```
+
+
