@@ -1,0 +1,130 @@
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "SPI/SPI.h"
+#include "ST7789_LCD/ST7789_LCD.h"
+
+/*
+ * Protocol used: 4-line serial interface | CSX	WRX DCX	SDA
+ * DCX -> LOW = COMMAND
+ * DCX -> HIGH = DATA
+ */
+
+#define Time_Format_24Hour	0
+#define Time_Format_12Hour	1
+
+typedef struct RTC_Date{
+	uint8_t day;
+	uint8_t month;
+	int year;
+}RTC_Date;
+
+typedef struct RTC_Time{
+	int am_pm;
+	int hour;
+	int min;
+	int seconds;
+	int milliseconds;
+}RTC_Time;
+
+void RTC_Init(RTC_Time TIME, RTC_Date DATE , uint8_t time_format)
+{
+	int ht,hu,mt,mu,st,su;
+	uint32_t t,d;
+	ht = TIME.hour / 10;
+	hu = TIME.hour % 10;
+	mt = TIME.min / 10;
+	mu = TIME.min % 10;
+	st = TIME.seconds / 10;
+	su = TIME.seconds % 10;
+	t = ht << 20 | hu << 16 | mt << 12 | mu << 8 | st << 4 | su << 0;
+
+
+PWR -> CR |= PWR_CR_DBP;
+RCC -> CFGR |= 25 << 16;
+RCC -> BDCR |= RCC_BDCR_RTCSEL;
+RCC -> BDCR |= RCC_BDCR_RTCEN;
+RTC -> WPR = 0xCA;
+RTC -> WPR = 0x53; //DISABLE RTC WRITE PROTECT
+RTC -> ISR |= RTC_ISR_INIT; //INITIALIZE RTC
+while(!(RTC -> ISR & RTC_ISR_INITF)); //WAIT
+RTC -> PRER = 0x00000000;
+RTC -> PRER = 0x7C << 16;
+RTC -> PRER |= 0x1F3F << 0;
+RTC -> TR = t ;// time
+RTC -> DR = 0x00 ;// date
+RTC -> CR |= RTC_CR_FMT | RTC_CR_TSE; //Configure the time format
+//RTC -> TAFCR |= RTC_TAFCR_TAMPTS;
+RTC -> ISR &= ~RTC_ISR_INIT; //Exit initialization mode.
+//while((RTC ->ISR & RTC_ISR_RSF));
+
+RTC -> WPR = 0xFF;
+PWR -> CR &= ~PWR_CR_DBP;
+
+
+}
+void RTC_Get_Time(RTC_Time TIME)
+{
+	uint32_t t;
+	t = RTC->TSDR;
+
+	TIME.hour    = 0;
+	TIME.min     = 0;
+	TIME.seconds = 0;
+	TIME.am_pm =  0;
+
+	TIME.hour    = (((t & 0x300000)>>20)*10) + ((t & 0xf0000)>>16);
+	TIME.min     = (((t & 0x7000)>>12)*10) + ((t & 0xf00)>>8);
+	TIME.seconds = (((t & 0xE0)>>5)*10) + ((t & 0xf)>>0);
+	TIME.am_pm =  (t & 0x400000) >> 22;
+}
+
+
+
+int main()
+{
+	MCU_Clock_Setup();
+	Console_Init(9600);
+Delay_Config();
+
+RTC_Time X;
+X.am_pm = 0;
+X.hour = 2;
+X.min = 12;
+X.seconds = 0;
+
+RTC_Date Y;
+
+RTC_Init(X, Y, Time_Format_12Hour);
+
+uint32_t t;
+int hour_tens, hour_unit;
+int mins_tens, mins_unit;
+int second_tens, second_unit;
+int seconds, mins, hour;
+
+	while(1)
+	{
+//		RTC_Get_Time(X);
+		t = RTC -> TR;
+		hour_tens = (t & 0x300000)>>20;
+		hour_unit = (t & 0xF0000)>>16;
+		mins_tens = (t & 0x7000)>>12;
+		mins_unit = (t & 0xf00) >> 8;
+		second_tens = (t & 0x70) >> 4;
+		second_unit = (t & 0xf);
+
+
+		hour = (hour_tens * 10) + hour_unit;
+		mins = (mins_tens * 10) + mins_unit;
+		seconds = (second_tens * 10) + second_unit;
+
+		printConsole("Timestamp: %d:%d:%d \r\n",hour,mins,seconds);
+		Delay_s(1);
+
+
+
+
+	}
+}
+
+
