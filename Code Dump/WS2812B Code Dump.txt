@@ -1,0 +1,216 @@
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "SPI/SPI.h"
+#include "RTC/RTC.h"
+
+SPI_Config X;
+
+#define active_low 0xc0
+#define active_high 0xFE
+
+
+void WS2811_LED_Init(TIM_TypeDef *TIM);
+
+void WS2811_low()
+{
+
+}
+void WS2811_high()
+{
+	SPI_Send_Data(X, active_high);
+}
+
+void WS2811_Send_RGB(int led_no, int red, int green, int blue)
+{
+	uint32_t color = green << 16 | red << 8 | blue;
+	SPI_CSS_Low(X);
+	for(int i = 23; i >= 0; i--)
+	{
+		if(color & (1 << i))
+		{
+			SPI_Send_Data(X, active_high);
+		}
+		else{
+			SPI_Send_Data(X, active_low);
+		}
+	}
+	SPI_CSS_High(X);
+
+}
+
+void WS2811_Send_HEX(int led_no, uint32_t hex_color)
+{
+	uint32_t color = ((hex_color & 0x00FF00) >> 8) << 16 | ((hex_color & 0xFF0000) >> 16) << 8 | (hex_color & 0x0000FF);
+
+	SPI_CSS_Low(X);
+	for(int i = 23; i >= 0; i--)
+	{
+		if(color & (1 << i))
+		{
+			SPI_Send_Data(X, active_high);
+		}
+		else{
+			SPI_Send_Data(X, active_low);
+		}
+	}
+	SPI_CSS_High(X);
+
+}
+
+
+
+int main()
+{
+	MCU_Clock_Setup();
+	Console_Init(9600);
+	Delay_Config();
+
+
+
+X.SPI = SPI1;
+X.phase = 1;
+X.polarity = 1;
+X.Frame = SPI_Frame_8Bit;
+X.LSB_MSB = 0;
+X.DMA_TX = 0;
+X.DMA_RX = 0;
+X.frequency = 2;
+X.mode = SPI_Master;
+X.type = SPI_Full_Duplex_Master;
+SPI_Init(X);
+SPI_CSS_Init(X);
+
+//
+//uint8_t array[3][3] = { {255,255,255} ,
+//                        {50,50,50} ,
+//                        {10,10,10}
+//                      };
+
+WS2811_Send_RGB(0, 0, 0, 0);
+WS2811_Send_RGB(1, 0, 0, 0);
+WS2811_Send_RGB(2, 0, 0, 0);
+Delay_ms(50);
+
+	while(1)
+	{
+//			WS2811_Send_RGB(0,100, 0, 0);
+//			WS2811_Send_RGB(0,0, 100, 0);
+//			WS2811_Send_RGB(0,0, 0, 100);
+//			Delay_ms(500);
+//			WS2811_Send_RGB(0,0, 0, 100);
+//			WS2811_Send_RGB(0,100, 0, 0);
+//			WS2811_Send_RGB(0,0, 100, 0);
+//			Delay_ms(500);
+//			WS2811_Send_RGB(0,0, 100, 0);
+//			WS2811_Send_RGB(0,0, 0, 100);
+//			WS2811_Send_RGB(0,100, 0, 0);
+//			Delay_ms(500);
+
+//			for(int i = 0; i< 255; i++)
+//			{
+//				WS2811_Send_RGB(0,i, 0, 0);
+//				WS2811_Send_RGB(0,0, i, 0);
+//				WS2811_Send_RGB(0,0, 0, i);
+//				Delay_ms(5);
+//			}
+//			for(int i = 255; i> 0; i--)
+//			{
+//				WS2811_Send_RGB(0,i, 0, 0);
+//				WS2811_Send_RGB(0,0, i, 0);
+//				WS2811_Send_RGB(0,0, 0, i);
+//				Delay_ms(5);
+//			}
+
+		WS2811_Send_RGB(0,255, 255, 255); //Turn indicator. From top to bottom
+		WS2811_Send_RGB(0,0, 0, 0);
+		WS2811_Send_RGB(0,0, 0, 0);
+		Delay_ms(100);
+		WS2811_Send_RGB(0,0, 0, 0);
+		WS2811_Send_RGB(0,255, 255, 255);
+		WS2811_Send_RGB(0,0, 0, 0);
+		Delay_ms(100);
+		WS2811_Send_RGB(0,0, 0, 0);
+		WS2811_Send_RGB(0,0, 0, 0);
+		WS2811_Send_RGB(0,255, 255, 255);
+		Delay_ms(100);
+
+
+//				WS2811_Send_RGB(0,0, 0, 0); //Turn indicator. From bottom to top
+//				WS2811_Send_RGB(0,0, 0, 0);
+//				WS2811_Send_RGB(0,255, 255, 255);
+//				Delay_ms(75);
+//				WS2811_Send_RGB(0,0, 0, 0);
+//				WS2811_Send_RGB(0,255, 255, 255);
+//				WS2811_Send_RGB(0,0, 0, 0);
+//				Delay_ms(75);
+//				WS2811_Send_RGB(0,255, 255, 255);
+//				WS2811_Send_RGB(0,0, 0, 0);
+//				WS2811_Send_RGB(0,0, 0, 0);
+//				Delay_ms(75);
+
+
+//
+//		SPI_CSS_Low(X);
+//		SPI_Send_Data(X, active_low); //GREEN
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//		SPI_Send_Data(X, active_high);
+//
+//		SPI_Send_Data(X, active_low); //BLUE
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//		SPI_Send_Data(X, active_low);
+//
+//
+//		SPI_CSS_High(X);
+//		Delay_us(50);
+
+
+	}
+}
+
+
+
+//
+
+//RCC ->APB2ENR |= RCC_APB2ENR_TIM1EN;
+// TIM1->PSC = 2;
+// TIM1 -> ARR = 79;
+// TIM1 -> CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2|TIM_CCMR1_OC1PE;
+// TIM1 -> BDTR |= TIM_BDTR_MOE;
+// TIM1 -> CCER |= TIM_CCER_CC1E;
+// TIM1 -> CR1 |= TIM_CR1_ARPE;
+// TIM1 -> EGR |= TIM_EGR_UG;
+//
+// TIM1 -> CR2 |= TIM_CR2_CCDS;
+// TIM1 -> DIER |= TIM_DIER_TDE | TIM_DIER_COMDE | TIM_DIER_CC1DE | TIM_DIER_UDE;
+// TIM1 -> EGR |= TIM_EGR_CC1G;
+//
+// TIM1 -> DCR = 13 << 0;
+// TIM1 -> DMAR = 0x81;
+//
+//
+////	 TIM1 -> CCR1 = 40;
+//
+//
+//
+//	RCC -> AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+//	DMA2_Stream1 -> CR |= ( 6 << 25 ) | (1 << 10) | (1 << 8) | (1 << 6) | (1 << 4) | (1 << 3) |
+//			 (1 << 2) |  (1 << 1);
