@@ -1,0 +1,130 @@
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "I2C/I2C.h"
+
+#define high 55
+#define low 20
+uint32_t array[5][24];
+
+void led_color(int led_no,uint8_t red, uint8_t green, uint8_t blue)
+{
+	uint32_t color = green << 16 | red << 8 | blue << 0;
+	for(int i = 24 ; i >= 0; i--)
+	{
+		if(color & (1 << i))
+		{
+			array[led_no][i] = high;
+		}
+		else
+		{
+			array[led_no][i] = low;
+		}
+	}
+
+}
+
+void led_nop(int led_no)
+{
+//	uint32_t color = green << 16 | red << 8 | blue << 0;
+	for(int i = 0 ; i <= 23; i++)
+	{
+			array[led_no][i] = 0;
+	}
+
+}
+
+
+void Timer_PWM_DMA_Init(TIM_TypeDef *TIM)
+{
+	RCC -> AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+	RCC -> APB2ENR |= RCC_APB2ENR_TIM1EN;
+	GPIO_Pin_Setup('A', 8, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, TIM1_CH1);
+
+	TIM -> PSC = 0;
+	TIM -> ARR = 60-1;
+	TIM -> CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1;
+	TIM -> CCMR1 |= TIM_CCMR1_OC1PE;
+	TIM -> BDTR |= TIM_BDTR_BKP | TIM_BDTR_MOE;
+	TIM -> CCER |= TIM_CCER_CC1E;
+//	TIM -> EGR |= TIM_EGR_UG;
+	TIM -> DMAR = 1;
+
+	//DMA INIT
+	DMA2_Stream1 -> CR |= DMA_SxCR_CHSEL_2 | DMA_SxCR_CHSEL_1; //CHANNEL 6
+	DMA2_Stream1 -> CR |= DMA_SxCR_MSIZE_0; //16 BITS
+	DMA2_Stream1 -> CR |= DMA_SxCR_PSIZE_0; //16 BITS
+	DMA2_Stream1 -> CR |= DMA_SxCR_MINC; //MEMORY INCREMENT MODE
+	DMA2_Stream1 -> CR |= DMA_SxCR_CIRC; //CIRCULAR MODE
+	DMA2_Stream1 -> CR |= DMA_SxCR_DIR_0; //MEMORY TO PERIPHERAL
+	DMA2_Stream1 -> CR |= DMA_SxCR_TCIE | DMA_SxCR_HTIE | DMA_SxCR_TEIE | DMA_SxCR_DMEIE;
+
+
+
+}
+
+void Timer_PWM_DMA_Start(TIM_TypeDef *TIM, uint32_t source_address, uint32_t desitnation_address, int packet_length)
+{
+	TIM1 -> DIER |= TIM_DIER_CC1DE;
+	DMA2_Stream1 ->NDTR = packet_length;
+	DMA2_Stream1 -> M0AR = (uint32_t)source_address;
+	DMA2_Stream1 -> PAR = (uint32_t)desitnation_address;
+	DMA2_Stream1 -> CR |= DMA_SxCR_EN;
+	TIM1 -> CR1 |= TIM_CR1_CEN;
+}
+
+
+int main()
+{
+
+MCU_Clock_Setup();
+Delay_Config();
+
+//IN INIT FUNCTION
+//Timer_PWM_DMA_Init(TIM1);
+RCC -> AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+RCC -> APB2ENR |= RCC_APB2ENR_TIM1EN;
+GPIO_Pin_Setup('A', 8, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, TIM1_CH1);
+
+TIM1 -> PSC = 0;
+TIM1 -> ARR = 60-1;
+TIM1 -> CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1;
+TIM1 -> CCMR1 |= TIM_CCMR1_OC1PE;
+TIM1 -> BDTR |= TIM_BDTR_BKP | TIM_BDTR_MOE;
+TIM1 -> CCER |= TIM_CCER_CC1E;
+//TIM1 -> EGR |= TIM_EGR_UG;
+TIM1 -> DMAR = 1;
+
+//DMA INIT
+DMA2_Stream1 -> CR |= DMA_SxCR_CHSEL_2 | DMA_SxCR_CHSEL_1; //CHANNEL 6
+DMA2_Stream1 -> CR |= DMA_SxCR_MSIZE_0; //16 BITS
+DMA2_Stream1 -> CR |= DMA_SxCR_PSIZE_0; //16 BITS
+DMA2_Stream1 -> CR |= DMA_SxCR_MINC; //MEMORY INCREMENT MODE
+DMA2_Stream1 -> CR |= DMA_SxCR_CIRC; //CIRCULAR MODE
+DMA2_Stream1 -> CR |= DMA_SxCR_DIR_0; //MEMORY TO PERIPHERAL
+DMA2_Stream1 -> CR |= DMA_SxCR_TCIE | DMA_SxCR_HTIE | DMA_SxCR_TEIE | DMA_SxCR_DMEIE;
+
+led_color(0,0, 0, 0);
+led_color(1,0, 0, 255);
+led_color(2,0, 255, 0);
+
+
+//IN SEND FUNCTTION
+TIM1 -> DIER |= TIM_DIER_CC1DE;
+DMA2_Stream1 ->NDTR = 24*3;
+DMA2_Stream1 -> M0AR = (uint32_t)&array;
+DMA2_Stream1 -> PAR = (uint32_t)&TIM1->CCR1;
+
+DMA2_Stream1 -> CR |= DMA_SxCR_EN;
+TIM1 -> CR1 |= TIM_CR1_CEN;
+
+//TIM1 -> CCR1 = 39;
+
+while(1)
+{
+
+
+}
+
+}
+
+
