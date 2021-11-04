@@ -17,14 +17,31 @@
 #include "stdlib.h"
 #include "stdarg.h"
 #include "USART/USART.h"
-#include "stdio.h"
+#include <stdio.h>
+#include "math.h"
+#include "inttypes.h"
+#include "Console/Console.h"
 
 int baud;
+#define NONE 0
+uint32_t APB1CLK_SPEED;
+uint32_t APB2CLK_SPEED;
+
+__STATIC_INLINE int32_t SystemAPB1_Clock_Speed(void)
+{
+	return (SystemCoreClock >> APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE1)>> RCC_CFGR_PPRE1_Pos]);
+}
+
+__STATIC_INLINE int32_t SystemAPB2_Clock_Speed(void)
+{
+	return (SystemCoreClock >> APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE2)>> RCC_CFGR_PPRE2_Pos]);
+}
 
 __STATIC_INLINE void MCU_Clock_Setup(void)
 {
+	SystemInit();
 	uint8_t pll_m = 25;
-	uint8_t pll_n = 192;
+	uint8_t pll_n = 192; //192
 	uint8_t pll_p = 0;
 	uint8_t pll_q = 4;
 
@@ -51,17 +68,20 @@ __STATIC_INLINE void MCU_Clock_Setup(void)
 	while((RCC -> CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL);
 SystemCoreClockUpdate();
 //SysTick_Config(SystemCoreClock/1000);
+APB1CLK_SPEED = SystemAPB1_Clock_Speed();
+APB2CLK_SPEED = SystemAPB2_Clock_Speed();
+RCC -> APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
 }
 
+
+
 __STATIC_INLINE int I2S_Clock_Init()
 {
-//	int plli2s_m = 16;
-//	int plli2s_n = 192;
-//	int plli2s_r = 2;
-//	RCC -> PLLI2SCFGR |= (plli2s_m << 0) | (plli2s_n << 6) | (plli2s_r << 28);
-//	RCC -> PLLI2SCFGR = 0x20003010;
-	RCC -> PLLI2SCFGR = 0x20005619; //0x20006019
+	int plli2s_m = 25; //25 25
+	int plli2s_n = 344; //344 192
+	int plli2s_r = 2; //2 5
+	RCC -> PLLI2SCFGR = (plli2s_m << 0) | (plli2s_n << 6) | (plli2s_r << 28);
 	RCC -> CR |= RCC_CR_PLLI2SON;
 	while(!(RCC -> CR & RCC_CR_PLLI2SRDY));
 	return (0UL);
@@ -79,10 +99,20 @@ __STATIC_INLINE uint32_t Delay_Config(void)
 	return (0UL);                                                     /* Function successful */
 }
 
-__STATIC_INLINE uint32_t Delay_us(unsigned long us)
+__STATIC_INLINE uint32_t Delay_ns500(void)
 {
 
-	SysTick->LOAD = (uint32_t)(us * (1/1000000) * SystemCoreClock);
+	SysTick->LOAD = 192;
+	SysTick->VAL = 0;
+	while((SysTick->CTRL & 0x00010000) == 0);
+	return (0UL);                                                     /* Function successful */
+}
+
+
+__STATIC_INLINE uint32_t Delay_us(float us)
+{
+
+	SysTick->LOAD = (SystemCoreClock / 1000000) * us;
 	SysTick->VAL = 0;
 	while((SysTick->CTRL & 0x00010000) == 0);
 	return (0UL);                                                     /* Function successful */
@@ -90,7 +120,8 @@ __STATIC_INLINE uint32_t Delay_us(unsigned long us)
 
 __STATIC_INLINE uint32_t Delay_ms(unsigned long ms)
 {
-	SysTick->LOAD = (uint32_t)(ms * (1/1000) * SystemCoreClock);
+	unsigned long x = (SystemCoreClock / 1000) * (ms);
+	SysTick->LOAD = x ;
 	SysTick->VAL = 0;
 	while((SysTick->CTRL & 0x00010000) == 0);
 	return (0UL);                                                     /* Function successful */
@@ -107,39 +138,6 @@ __STATIC_INLINE uint32_t Delay_s(unsigned long s)
 	return (0UL);
 }
 
-__STATIC_INLINE void Console_Init(int baudrate)
-{
-	RCC -> AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	RCC -> APB2ENR |= RCC_APB2ENR_USART1EN;
-	GPIOA -> MODER   |= (2 << 18) | (2 << 20);	//9 -> tx	10 -> rx
-	GPIOA -> OTYPER  |= (0 << 9)  | (0 << 10) ;
-	GPIOA -> OSPEEDR |= (3 << 9)  | (3 << 10);
-	GPIOA -> PUPDR   |= (0 << 18) | (0 << 20);
-	GPIOA -> AFR[1]  |= (7 << 4)  | (5 << 8);
-	USART1 ->CR1 |= USART_CR1_UE;
-	baud = baudrate;
-	USART1->BRR = (int)(SystemCoreClock / (16 * baudrate)) << 4;
-	USART1 ->CR1 |= USART_CR1_TE | USART_CR1_RE  ;
-}
-
-__STATIC_INLINE void printConsole(char *msg, ...)
-{
-
-char buff[100];
-//	#ifdef DEBUG_UART
-
-	va_list args;
-	va_start(args, msg);
-	vsprintf(buff, msg, args);
-
-	for(int i = 0; i<= strlen(buff); i++){
-	USART1 -> DR = buff[i];
-	USART1 -> CR1 |= USART_CR1_SBK;
-			while (!(USART1->SR & USART_SR_TXE));
-	}
-
-//	#endif
-}
 
 
 
