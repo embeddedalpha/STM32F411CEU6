@@ -14,34 +14,51 @@
 #include "I2C/I2C.h"
 #include "USART/USART.h"
 
+#define DMA_Peripheral_To_Memory 0
+#define DMA_Memory_To_Peripheral 1
+#define DMA_Memory_To_Memory     2
 
+#define Enable 1
+#define Disable 0
+
+#define DMA_Priority_Low           0
+#define DMA_Priority_Medium        1
+#define DMA_Priority_High          2
+#define DMA_Priority_Very_High     3
 
 typedef struct DMA_Config
 {
-
 	DMA_Stream_TypeDef *DMA_Stream;
 	uint8_t channel;
-	uint8_t priority;
+	uint32_t *source_address;
+	uint32_t *destination_address;
+	uint8_t priority_level;
 	uint8_t memory_size;
 	uint8_t peripheral_size;
+	uint8_t circular_mode;
 	uint8_t direction;
-	int data_length;
-	uint32_t source_address;
-	uint32_t destination_address;
+	uint8_t packet_length;
+	uint8_t interrupt_priority;
+	uint8_t transfer_complete_interrupt;
+	uint8_t half_transfer_interrupt;
+	uint8_t transfer_error_interrupt;
+	uint8_t direct_mode_error_interrupt;
 
 }DMA_Config;
 
 
 void DMA_Init(DMA_Config DMA);
+void DMA_Interrupt(DMA_Config DMA);
+void DMA_Enable(DMA_Config DMA);
 
-/******************************************* USART START ****************************************************/
-void DMA_UART_TX_Init(USART_TypeDef *USART, char data[], int len);
-void DMA_UART_TX_Start(USART_TypeDef *USART);
-void DMA_UART_RX_Init(USART_TypeDef *USART, char data[], int len);
-void DMA_UART_RX_Start(USART_TypeDef *USART);
-/******************************************* USART END ****************************************************/
-
-
+//void DMA2_Stream2_IRQHandler(void)
+//{
+//	if((DMA2 ->LISR & DMA_LISR_TCIF2) == DMA_LISR_TCIF2)
+//	{
+//		DMA2 -> LIFCR |= DMA_LIFCR_CTCIF2;
+//      //Your code goes here
+//
+//	}
+//}
 
 #endif /* DMA_DMA_H_ */
-
