@@ -60,6 +60,22 @@ typedef struct DMA_Config
 ### Example of structure is shown below:
 ```C
 DMA_Config DMA_I2S1;
+```
 
+### Simplified Example:
+```C
+int data1,data2;
 
+DMA_Config DMA;
+
+DMA.DMA_Stream = DMA2_Stream2;
+DMA.channel = 3;
+DMA.circular_mode = Enable;
+DMA.destination_address = &data1;
+DMA.source_address = &data2;
+DMA.direction = DMA_Memory_To_Memory;
+DMA.memory_size = DMA_memory_size_8;
+DMA.peripheral_size = DMA_peripheral_size_8;
+DMA.packet_length = 100;
+DMA_Init(DMA);
 ```
