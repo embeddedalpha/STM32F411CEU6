@@ -2,6 +2,8 @@
 
 ### STM32F411CE has 2 DMA controllers with 6 streams per controller and 7 channels ber stream.
 
+### Note: No two channels on same stream can be used at the same time.
+
 ### Functions available for users
 
 ``` C
