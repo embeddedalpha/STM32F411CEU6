@@ -45,6 +45,14 @@ typedef struct DMA_Config
 #define DMA_Priority_Medium        1
 #define DMA_Priority_High          2
 #define DMA_Priority_Very_High     3
+
+#define DMA_memory_size_8	0
+#define DMA_memory_size_16	1
+#define DMA_memory_size_32	2
+
+#define DMA_peripheral_size_8	0
+#define DMA_peripheral_size_16	1
+#define DMA_peripheral_size_32	2
 ```
 
 ### Example of structure is shown below:
