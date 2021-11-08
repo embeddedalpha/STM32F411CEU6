@@ -110,10 +110,10 @@ uint8_t US100_UART_Read_Temp(USART_TypeDef *USART)
  * ______________________________________________________________________________________________________________
  */
 
-float US100_UART_Get_Distance_mm(USART_TypeDef *USART)
+int US100_UART_Get_Distance_mm(USART_TypeDef *USART)
 {
-	uint8_t x1,x2;
-	float y;
+	int x1,x2;
+	int y;
 	USART -> DR = 0x55;
 	while (!(USART ->SR & USART_SR_TXE));
 	Delay_ms(4);
@@ -123,7 +123,7 @@ float US100_UART_Get_Distance_mm(USART_TypeDef *USART)
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x2 = USART -> DR;
-	y = x1 << 8 |  x2;
+	y = ((x1 * 256)  +  x2) ;
 	return y;
 }
 
@@ -144,18 +144,19 @@ float US100_UART_Get_Distance_mm(USART_TypeDef *USART)
  * ______________________________________________________________________________________________________________
  */
 
-float US100_UART_Get_Distance_cm(USART_TypeDef *USART)
+int US100_UART_Get_Distance_cm(USART_TypeDef *USART)
 {
-	uint8_t x1,x2;
-	float y;
+	int x1,x2;
+	int y;
 	USART -> DR = 0x55;
 	while (!(USART ->SR & USART_SR_TXE));
+	Delay_ms(4);
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x1 = USART -> DR;
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x2 = USART -> DR;
-	y = x2 * 256 + x1;
+	y = ((x1 * 256)  +  x2) /10;
 	return y;
 }
