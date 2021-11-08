@@ -86,6 +86,10 @@ uint8_t US100_UART_Read_Temp(USART_TypeDef *USART)
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x = USART -> DR;
+//
+//	x = (float)((5/9)*(x - 32));
+	x = x -32;
+	x = x*0.55;
 	return x;
 }
 
@@ -112,13 +116,14 @@ float US100_UART_Get_Distance_mm(USART_TypeDef *USART)
 	float y;
 	USART -> DR = 0x55;
 	while (!(USART ->SR & USART_SR_TXE));
+	Delay_ms(4);
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x1 = USART -> DR;
 	USART1 ->CR1 |= USART_CR1_RE;
 	while (!(USART ->SR & USART_SR_RXNE));
 	x2 = USART -> DR;
-	y = x2 * 256 + x1;
+	y = x1 << 8 |  x2;
 	return y;
 }
 
