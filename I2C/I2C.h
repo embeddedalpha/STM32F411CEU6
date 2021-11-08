@@ -44,4 +44,3 @@ void I2C_Master_Stop(I2C_Config I2C);
 void I2C_Master_Send_NACK(I2C_Config I2C);
 
 #endif /* I2C_I2C_H_ */
-
