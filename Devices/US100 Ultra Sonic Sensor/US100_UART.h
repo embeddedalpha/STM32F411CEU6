@@ -67,7 +67,7 @@ uint8_t US100_UART_Read_Temp(USART_TypeDef *USART);
  * ______________________________________________________________________________________________________________
  */
 
-float US100_UART_Get_Distance_mm(USART_TypeDef *USART);
+int US100_UART_Get_Distance_mm(USART_TypeDef *USART);
 
 
 /*_______________________________________________________________________________________________________________
@@ -86,7 +86,6 @@ float US100_UART_Get_Distance_mm(USART_TypeDef *USART);
  * ______________________________________________________________________________________________________________
  */
 
-float US100_UART_Get_Distance_cm(USART_TypeDef *USART);
+int US100_UART_Get_Distance_cm(USART_TypeDef *USART);
 
 #endif /* US100_UART_US100_UART_H_ */
-
