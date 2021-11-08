@@ -139,7 +139,7 @@ char I2C_Master_Receive_Data(I2C_Config I2C)
 //	I2C.I2C -> CR1 |= I2C_CR1_STOP;
 //	temp = I2C.I2C -> DR;
 //	I2C.I2C -> CR1 |= I2C_CR1_ACK;
-//	while(!(I2C.I2C -> SR1 & I2C_SR1_RXNE)){}
+	while(!(I2C.I2C -> SR1 & I2C_SR1_RXNE)){}
 	temp = I2C.I2C -> DR;
 	I2C.I2C -> CR1 |= I2C_CR1_ACK;
 	return temp;
