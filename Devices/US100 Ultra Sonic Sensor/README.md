@@ -7,8 +7,8 @@
 
 ```C
 void US100_UART_Init(USART_TypeDef *USART);
-uint8_t US100_UART_Read_Temp(USART_TypeDef *USART);
-float US100_UART_Get_Distance_mm(USART_TypeDef *USART);
-float US100_UART_Get_Distance_cm(USART_TypeDef *USART);
+int US100_UART_Read_Temp(USART_TypeDef *USART);
+int US100_UART_Get_Distance_mm(USART_TypeDef *USART);
+int US100_UART_Get_Distance_cm(USART_TypeDef *USART);
 ```
 
