@@ -65,7 +65,7 @@ void I2C_Master_Init(I2C_Config I2C)
 void I2C_Master_Start(I2C_Config I2C)
 {
 	volatile int temp;
-	temp = I2C.I2C -> SR1 | I2C.I2C -> SR2;
+//	temp = I2C.I2C -> SR1 | I2C.I2C -> SR2;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
 	while(!(I2C.I2C -> SR1 & I2C_SR1_SB)){}
 }
@@ -103,16 +103,6 @@ void I2C_Master_Send_Buffer(I2C_Config I2C, uint8_t *data, int length)
 	}
 }
 
-void I2C_Master_Write_Register(I2C_Config I2C, uint8_t device_address, uint8_t reg_address, uint8_t data)
-{
-	I2C_Master_Start(I2C);
-	I2C_Master_Address(I2C, device_address,0);
-	I2C_Master_Send_Byte(I2C, reg_address);
-	I2C_Master_Send_Byte(I2C, data);
-	I2C_Master_Stop(I2C);
-}
-
-
 int I2C_Master_Receive_Byte(I2C_Config I2C)
 {
 	volatile int temp;
@@ -122,8 +112,6 @@ int I2C_Master_Receive_Byte(I2C_Config I2C)
 	I2C.I2C -> CR1 &= ~I2C_CR1_ACK;
 	return temp;
 }
-
-
 
 void I2C_Master_NACK(I2C_Config I2C)
 {
@@ -142,3 +130,44 @@ void I2C_Master_Stop(I2C_Config I2C)
 	I2C.I2C -> CR1 |= I2C_CR1_STOP;
 }
 
+/*****************************************************************************************/
+
+void I2C_Master_Write_Register(I2C_Config I2C, uint8_t device_address, uint8_t reg_address, uint8_t data)
+{
+	I2C_Master_Start(I2C);
+	I2C_Master_Address(I2C, device_address,0);
+	I2C_Master_Send_Byte(I2C, reg_address);
+	I2C_Master_Send_Byte(I2C, data);
+	I2C_Master_Stop(I2C);
+}
+
+int I2C_Master_Read_Register(I2C_Config I2C, uint8_t device_address, uint8_t reg_address)
+{
+	volatile int temp;
+	I2C_Master_Start(I2C);
+	I2C_Master_Address(I2C, device_address, 0);
+	I2C_Master_Send_Byte(I2C, reg_address);
+	I2C_Master_Stop(I2C);
+	I2C_Master_Start(I2C);
+	I2C_Master_Address(I2C, device_address, 1);
+	temp = I2C_Master_Receive_Byte(I2C);
+	I2C_Master_Stop(I2C);
+	return temp;
+}
+
+void I2C_Master_Set_Bit(I2C_Config I2C,uint8_t device_address, uint8_t reg_address, uint8_t byte_postition)
+{
+	int temp;
+	temp = I2C_Master_Read_Register(I2C, device_address, reg_address);
+	temp |= 1 << byte_postition;
+	I2C_Master_Write_Register(I2C, device_address, reg_address, temp);
+}
+
+
+void I2C_Master_Reset_Bit(I2C_Config I2C,uint8_t device_address, uint8_t reg_address, uint8_t byte_postition)
+{
+	int temp;
+	temp = I2C_Master_Read_Register(I2C, device_address, reg_address);
+	temp &= ~(1 << byte_postition);
+	I2C_Master_Write_Register(I2C, device_address, reg_address, temp);
+}
