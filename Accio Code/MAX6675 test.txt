@@ -1,0 +1,34 @@
+#include <stdint.h>
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "I2C/I2C.h"
+#include "Console/Console.h"
+#include "NAU7802/NAU7802_Reg.h"
+#include "MAX6675/MAX6675.h"
+
+
+I2C_Config NAU7802;
+
+
+int main(void)
+{
+
+	MCU_Clock_Setup();
+	Delay_Config();
+	Console_Init(USART1, 9600);
+
+
+MAX6675_Init_1(SPI1, GPIOC, 0);
+MAX6675_Init_2(SPI1, GPIOC, 1);
+
+int temp;
+
+	for(;;)
+	{
+		temp = (int)MAX6675_Get_Celcius_Temperature_2();
+		printConsole(USART1, "Temperature 1 = %d \r\n",temp);
+		Delay_ms(10000);
+//		printConsole(USART1, "Temperature 2 = %ld \r\n",MAX6675_Get_Celcius_Temperature_2());
+	}
+}
+
