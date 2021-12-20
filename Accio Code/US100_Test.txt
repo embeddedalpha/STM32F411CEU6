@@ -1,0 +1,41 @@
+#include <stdint.h>
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "I2C/I2C.h"
+#include "Console/Console.h"
+#include "NAU7802/NAU7802_Reg.h"
+#include "MAX6675/MAX6675.h"
+#include "US100_Ultrasonic_Sensor/US100_US.h"
+
+
+
+int main(void)
+{
+	int u1,u2,u3,u4;
+
+	MCU_Clock_Setup();
+	Delay_Config();
+	Console_Init(USART1, 9600);
+
+	US100_UART4_Init();
+	US100_UART2_Init();
+	US100_UART3_Init();
+	US100_UART5_Init();
+
+
+	for(;;)
+	{
+		u1 = US100_UART4_Filtered_mm();
+		u2 = US100_UART2_Filtered_mm();
+		u3 = US100_UART3_Filtered_mm();
+		u4 = US100_UART5_Filtered_mm();
+
+		printConsole(USART1, "US1 = %d\r\n",u1);
+		printConsole(USART1, "US2 = %d\r\n",u2);
+		printConsole(USART1, "US3 = %d\r\n",u3);
+		printConsole(USART1, "US4 = %d\r\n",u4);
+
+		Delay_ms(500);
+	}
+}
+
