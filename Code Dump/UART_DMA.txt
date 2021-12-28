@@ -1,0 +1,138 @@
+#define ARM_MATH_CM4
+
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "arm_math.h"
+#include "I2S/I2S.h"
+
+
+
+	uint8_t OUT_ARRAY[4098];
+	int16_t MIC_DATA_IN[8192];
+	int16_t MIC_DATA_LEFT[4098];
+	float32_t in_fft[4098], out_fft[4098];
+
+arm_rfft_fast_instance_f32 fft_handler;
+
+float complexABS(float real, float compl);
+void DoFFT();
+void Get_I2S_Data();
+
+int len = 4098;
+
+void Send_to_PC();
+I2S_Config soundacq;
+
+int main()
+{
+
+	soundacq.I2S = SPI1;
+	int32_t baudrate = 9600;
+	MCU_Clock_Setup();
+	I2S_Clock_Init();
+	Delay_Config();
+	GPIO_Pin_Setup(GPIOB, 1, GENERAL_PURPOSE_OUTPUT_PUSHPULL, NONE);
+	GPIO_Pin_Setup(GPIOB, 0, GENERAL_PURPOSE_OUTPUT_PUSHPULL, NONE);
+
+	RCC -> APB2ENR |= RCC_APB2ENR_USART1EN;
+	RCC -> AHB1ENR |=  RCC_AHB1ENR_DMA2EN;
+	USART1 -> CR3 |= USART_CR3_DMAT;
+	DMA2_Stream7 -> CR |= 4 << 25  | 0 << 16 | 0 << 13 | 0 << 11 | 1 << 10 | 0 << 8 | 1 << 6 |
+			1 << 4 | 3 << 16;
+	DMA2_Stream7 -> NDTR = (uint8_t)len;
+	DMA2_Stream7 -> PAR = (uint32_t)&USART1 -> DR;
+	DMA2_Stream7 -> M0AR = (uint32_t)&OUT_ARRAY[0];
+
+	GPIO_Pin_Setup(GPIOA, 9, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, USART1_TX);
+	GPIO_Pin_Setup(GPIOA, 10, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, USART1_RX);
+	USART1 -> BRR = (int)(SystemCoreClock / (16 * baudrate)) << 4;
+	USART1 -> CR1 |= USART_CR1_TE ;
+	USART1 -> CR1 |=  USART_CR1_RE  ;
+	USART1 -> CR1 |= USART_CR1_UE;
+
+	RCC -> APB2ENR |= RCC_APB2ENR_SPI1EN;
+	GPIO_Pin_Setup(GPIOA, 4, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_WS);
+	GPIO_Pin_Setup(GPIOA, 5, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_CK);
+	GPIO_Pin_Setup(GPIOA, 7, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, I2S1_SD);
+	GPIO_Pin_Setup(GPIOA, 6, GENERAL_PURPOSE_OUTPUT_PUSHPULL, NONE);
+	GPIO_Pin_Low(GPIOA, 6);
+	SPI1 -> I2SCFGR |= SPI_I2SCFGR_I2SMOD
+			        | 3 << 8
+					| 0 << 4
+					| 0 << 1
+					| 0 << 0;
+	SPI1 -> I2SPR = 56;
+	SPI1 -> I2SPR |= 1 << 8;
+	SPI1 -> I2SCFGR |= SPI_I2SCFGR_I2SE;
+
+
+
+
+
+	while(1)
+	{
+
+		Get_I2S_Data();
+
+		GPIO_Pin_High(GPIOB, 1);
+		DoFFT();
+		GPIO_Pin_Low(GPIOB, 1);
+
+
+	}
+
+}
+
+
+void Get_I2S_Data()
+{
+	for(int i =0; i < 8192; i++)
+	{
+//		GPIO_Pin_High(GPIOB, 0);
+		in_fft[i] = I2S_Master_Receive_Left_Channel(soundacq);
+//		GPIO_Pin_Low(GPIOB, 0);
+	}
+}
+
+float complexABS(float real, float compl)
+{
+	return sqrtf(real*real+compl*compl);
+}
+
+void Send_to_PC()
+{
+	DMA2_Stream7 -> NDTR = (uint8_t)len;
+	DMA2_Stream7 -> CR |= DMA_SxCR_EN;
+	while((DMA2->HISR & DMA_HIFCR_CTCIF7) == 0){}
+	DMA2 ->HIFCR |= DMA_HIFCR_CTCIF7;
+}
+
+
+void DoFFT()
+{
+	arm_rfft_fast_f32(&fft_handler,&in_fft,&out_fft,0);
+
+	int freq_bins[4098];
+	int freqpoint = 0;
+	int offset = 150;
+
+	for(int i = 0; i < 4096; i++)
+	{
+		freq_bins[freqpoint] = (int)(20*log10f(complexABS(out_fft[i], out_fft[i+1])))-offset;
+		if(freq_bins[freqpoint] < 0)
+		{
+			freq_bins[freqpoint] = 0;
+		}
+		freqpoint++;
+	}
+
+	OUT_ARRAY[0] = 0xff;
+	for(int i = 1; i < 4098; i++)
+	{
+		OUT_ARRAY[i] = (uint8_t)freq_bins[1];
+	}
+	OUT_ARRAY[4098] = 0xAA;
+
+	Send_to_PC();
+
+}
