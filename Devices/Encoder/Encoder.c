@@ -15,7 +15,7 @@ void Encoder_Init(TIM_TypeDef *timer)
 	timer -> CR1 |= TIM_CR1_CEN;
 }
 
-uint16_t EncOder_Read(TIM_TypeDef *timer)
+uint16_t Encoder_Read_Raw(TIM_TypeDef *timer)
 {
 return timer -> CNT;
 }
