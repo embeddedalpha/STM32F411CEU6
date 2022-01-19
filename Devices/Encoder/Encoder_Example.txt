@@ -1,0 +1,67 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define ARM_MATH_CM4
+
+#include "main.h"
+#include "GPIO/GPIO.h"
+#include "I2C/I2C.h"
+#include "Console/Console.h"
+
+
+
+
+void Encoder_Init(TIM_TypeDef *timer)
+{
+	RCC -> APB2ENR |= RCC_APB2ENR_TIM1EN ;
+
+	GPIO_Pin_Setup(GPIOA, 8, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, TIM1_CH1);
+	GPIO_Pin_Setup(GPIOA, 9, ALTERNATE_FUNCTION_OUTPUT_PUSHPULL, TIM1_CH2);
+	timer ->ARR = 0xffff;
+	timer -> CCMR1 |= TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0;
+	timer -> CCER &= ~(TIM_CCER_CC1P | TIM_CCER_CC2P);
+	timer -> SMCR |= TIM_SMCR_SMS_0 | TIM_SMCR_SMS_1;
+	timer -> CR1 |= TIM_CR1_CEN;
+}
+
+uint32_t Encoder_Read(TIM_TypeDef *timer)
+{
+return timer -> CNT;
+}
+
+
+int main()
+{
+
+	int32_t baudrate = 9600;
+	MCU_Clock_Setup();
+	I2S_Clock_Init();
+	Delay_Config();
+	Console_Init(USART2, baudrate);
+
+	Encoder_Init(TIM1);
+
+	uint32_t counter = 0;
+	int16_t count = 0;
+	int16_t position = 0;
+
+	while(1)
+	{
+
+//		printConsole(USART2, "%d \r\n",Encoder_Read(TIM1));
+		counter = Encoder_Read(TIM1);
+		count = (int16_t)counter;
+		position = count /7425;
+//		printConsole(USART2, "counter = %"PRId32"\r\n",counter);
+//		printConsole(USART2, "count = %d \r\n",count);
+		printConsole(USART2, "position = %d \r\n",position);
+
+	}
+}
+
+
+
+
+
+
+
+
