@@ -64,13 +64,13 @@ int I2C_Master_Start(I2C_Config I2C)
 {
 	int time_out = 1000;
 	I2C.I2C -> CR1 |= I2C_CR1_START;
-	while( !(I2C.I2C -> SR1 & I2C_SR1_SB) && time_out > 0)
+	while( !(I2C.I2C -> SR1 & I2C_SR1_SB))
 	{
+		if(time_out == 0)
+		{
+			return -1;
+		}
 		time_out--;
-	}
-	if(time_out == 0)
-	{
-		return -1;
 	}
 	return 0;
 }
