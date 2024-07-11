@@ -108,7 +108,7 @@ void RTC_Get_Date(RTC_Date *D)
 	year = 2000 + (yeart * 10) + yearu;
 
 	montht = (d & 0x1000) >> 12;
-	monthu = (d & 0xf00) >> 12;
+	monthu = (d & 0xf00) >> 8;
 	month = (montht * 10) + monthu;
 
 	datet = (d & 0x30) >> 4;
