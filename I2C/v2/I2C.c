@@ -103,7 +103,7 @@ void I2C_Master_Send_Buffer(I2C_Config I2C, uint8_t *data, int length)
 	for(int i = 0; i < length; i++)
 	{
 		while((I2C.I2C -> SR1 & 0x80) == 0){}
-		I2C.I2C -> DR = data;
+		I2C.I2C -> DR = data[i];
 		while((I2C.I2C -> SR1 & 0x80) == 0){}
 	}
 }
